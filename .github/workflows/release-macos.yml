@@ -56,7 +56,8 @@ jobs:
         run: npm run package:mac -- --publish never --mac --x64 --arm64 -c.mac.target=dmg -c.mac.target.zip
       - name: Confirm unsigned release when Apple credentials are absent
         if: env.CSC_LINK == '' || env.CSC_KEY_PASSWORD == ''
-        run: echo "UNSIGNED RELEASE: Apple credentials are absent; no notarization was attempted."
+        run: |
+          echo "UNSIGNED RELEASE: Apple credentials are absent; no notarization was attempted."
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
