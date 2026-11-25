@@ -70,6 +70,8 @@ If `MODEL_GATEWAY_URL` is not set, the app uses a deterministic **MockModelGatew
 | `npm run dev` | Start Electron + Vite dev |
 | `npm run build` | Build main/preload/renderer |
 | `npm run typecheck` | TypeScript checks |
+| `npm run test` | Smoke build + unit tests (Vitest) |
+| `npm run verify` | Typecheck + build + tests |
 | `npm run package:mac` | Build macOS package |
 | `npm run package:win` | Build Windows package |
 | `npm run package:linux` | Build Linux package |

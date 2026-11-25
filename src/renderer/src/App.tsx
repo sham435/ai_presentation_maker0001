@@ -176,8 +176,8 @@ export default function App() {
           <div style={{ height: 12 }} />
           <div className="actions">
             <button className="btn" onClick={createDeck} disabled={busy || !brief.trim()}>{busy ? 'Working...' : 'Generate Deck'}</button>
-            <button className="btn secondary" onClick={() => artifactPath && getApi()?.openArtifact(artifactPath)} disabled={!canExport || busy}>Open</button>
-            <button className="btn secondary" onClick={() => artifactPath && getApi()?.exportDeck(artifactPath)} disabled={!canExport || busy}>Export</button>
+            <button className="btn secondary" onClick={async () => { if (!artifactPath) return; try { await getApi()?.openArtifact(artifactPath) } catch (e: any) { setError(e?.message || String(e)) } }} disabled={!canExport || busy}>Open</button>
+            <button className="btn secondary" onClick={async () => { if (!artifactPath) return; try { await getApi()?.exportDeck(artifactPath) } catch (e: any) { setError(e?.message || String(e)) } }} disabled={!canExport || busy}>Export</button>
           </div>
           {error && <div className="error">{error}</div>}
         </div>
