@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid'
 import { DEFAULT_LANGUAGE, DEFAULT_PAGE_BUCKET, DEFAULT_STYLE, STYLE_PRESETS } from '@shared/constants'
+import { getTemplateById } from '@shared/templateCatalog'
 import type { CreatePresentationRequest, PresentationSpec, StylePreset } from '@shared/types'
 
 function detectLanguage(text: string, explicit?: string): string {
@@ -29,6 +30,11 @@ export function parseCreateRequest(req: CreatePresentationRequest): Presentation
   const brief = req.brief?.trim()
   if (!brief) throw new Error('brief is required')
   const audience = req.options?.audience?.trim() || inferAudience(brief)
+  const requestedTemplateId = req.options?.templateId?.trim()
+  const template = getTemplateById(requestedTemplateId)
+  // Unknown ids are normalized once at the boundary; downstream code can trust the catalog.
+  const templateId = template ? requestedTemplateId! : 'auto'
+  const styleClass = template?.style || normalizeStyle(req.options?.style)
   return {
     sessionId: nanoid(),
     mode: 'create',
@@ -36,8 +42,8 @@ export function parseCreateRequest(req: CreatePresentationRequest): Presentation
     audience,
     language: detectLanguage(brief, req.options?.language),
     pageCountBucket: pageBucket(req.options),
-    styleClass: normalizeStyle(req.options?.style),
-    templateId: 'auto',
+    styleClass,
+    templateId,
     referenceDocs: req.options?.referenceFiles || [],
     brief,
     includeCitations: Boolean(req.options?.includeCitations)

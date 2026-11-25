@@ -221,7 +221,7 @@ sequenceDiagram
 
 ## 11. Extensibility
 
-- **New styles:** add preset in `src/shared/constants.ts` and theme in `src/main/agent/templates.ts`.
+- **New styles/templates:** add preset in `src/shared/constants.ts`, then theme tokens and role previews in `src/shared/templateCatalog.ts`; `src/main/agent/templates.ts` resolves them into render themes.
 - **New output formats:** add renderer behind `DeckArtifact` contract (PPTX/PDF exporter).
 - **New model providers:** implement `ModelGateway` adapter.
 - **New modalities:** extend `SlideContent` and layout renderer; keep sanitization.

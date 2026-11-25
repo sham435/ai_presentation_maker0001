@@ -7,8 +7,10 @@ export function detectTargetSlides(req: EditPresentationRequest, session: DeckSe
   const nums = Array.from(req.instruction.matchAll(/slide\s*(\d+)/gi)).map((m) => Number(m[1]))
   const valid = nums.filter((n) => n >= 1 && n <= session.slides.length)
   if (valid.length) return Array.from(new Set(valid))
-  // default: regenerate body slides
-  return session.slides.filter((s) => s.role === 'body').map((s) => s.index)
+  // default: regenerate content slides (plus legacy 'body' slides from older sessions)
+  return session.slides
+    .filter((s) => s.role === 'content' || s.role === 'body')
+    .map((s) => s.index)
 }
 
 export async function regenerateSlides(

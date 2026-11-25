@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { STYLE_PRESETS } from '@shared/constants'
+import { TEMPLATE_CATALOG, getTemplatesByStyle } from '@shared/templateCatalog'
+import TemplatePickerModal, { TemplateThumb } from './TemplatePickerModal'
 import type { AgentEvent, DeckSession, PageCountBucket, Slide, StylePreset } from '@shared/types'
 
 const defaultBrief = 'A 10-slide presentation about renewable energy for investors'
@@ -14,7 +16,9 @@ export default function App() {
   const [language, setLanguage] = useState('')
   const [pageCount, setPageCount] = useState<PageCountBucket | string>('10-15')
   const [style, setStyle] = useState<StylePreset>('Business')
+  const [templateId, setTemplateId] = useState<string>('auto')
   const [includeCitations, setIncludeCitations] = useState(false)
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
   const [sessions, setSessions] = useState<DeckSession[]>([])
   const [current, setCurrent] = useState<DeckSession | null>(null)
   const [slides, setSlides] = useState<Slide[]>([])
@@ -81,6 +85,7 @@ export default function App() {
           language: language || undefined,
           pageCount: pageCount as PageCountBucket,
           style,
+          templateId: templateId || undefined,
           includeCitations
         }
       })
@@ -131,6 +136,9 @@ export default function App() {
     setCurrent(s)
     setSlides(s.slides || [])
     setStatus(s.status)
+    // Keep the gallery and style selector in sync with the loaded deck.
+    setTemplateId(s.spec.templateId || 'auto')
+    setStyle(s.spec.styleClass || 'Business')
     setError('')
   }
 
@@ -170,7 +178,12 @@ export default function App() {
             </div>
             <div>
               <label className="label">Style</label>
-              <select className="select" value={style} onChange={(e) => setStyle(e.target.value as StylePreset)}>
+              <select className="select" value={style} onChange={(e) => {
+                const next = e.target.value as StylePreset
+                setStyle(next)
+                const first = getTemplatesByStyle(next)[0]
+                if (first) setTemplateId(first.id)
+              }}>
                 {STYLE_PRESETS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -187,6 +200,28 @@ export default function App() {
             <button className="btn secondary" onClick={async () => { if (!artifactPath) return; try { await getApi()?.exportDeck(artifactPath) } catch (e: any) { setError(e?.message || String(e)) } }} disabled={!canExport || busy}>Export</button>
           </div>
           {error && <div className="error">{error}</div>}
+        </div>
+
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center' }}>
+            <label className="label" style={{ margin: 0 }}>Template gallery</label>
+            <button className="btn secondary" style={{ padding: '6px 10px', fontSize: 12 }} onClick={() => setShowTemplatePicker(true)}>Browse all</button>
+          </div>
+          <div className="small" style={{ margin: '8px 0 10px' }}>Pick a visual template. Style follows the template.</div>
+          <div className="template-grid">
+            {TEMPLATE_CATALOG.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`template-item ${templateId === t.id ? 'active' : ''}`}
+                onClick={() => { setTemplateId(t.id); setStyle(t.style) }}
+                title={t.description}
+              >
+                <TemplateThumb template={t} className="template-preview" />
+                <div className="template-name">{t.name}</div>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="card">
@@ -231,6 +266,12 @@ export default function App() {
           </div>
         )}
       </main>
+      <TemplatePickerModal
+        open={showTemplatePicker}
+        selectedId={templateId}
+        onSelect={(t) => { setTemplateId(t.id); setStyle(t.style) }}
+        onClose={() => setShowTemplatePicker(false)}
+      />
     </div>
   )
 }

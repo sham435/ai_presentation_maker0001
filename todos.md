@@ -33,13 +33,14 @@ Part of the MyAI agent suite.
 
 - [x] `P0` Outline generation prompt + JSON-schema validation.
 - [x] `P0` Cover → body → close structure.
-- [ ] `P1` Slide-count targeting to match the bucket.
+- [x] `P1` Slide-count targeting to match the bucket.
 - [ ] `P2` Outline self-critique pass.
 
 ## 5. Page Generator & Layout
 
 - [x] `P0` Per-slide content generation.
 - [x] `P0` Layout binding (content/style separation).
+- [x] `P1` Five-role layouts (cover, catalog, chapter, content, end) shared by previews and decks.
 - [x] `P0` Streaming emission one slide at a time.
 - [ ] `P1` Overflow detection (text too long for layout).
 - [ ] `P2` Simple chart block support.
@@ -47,7 +48,7 @@ Part of the MyAI agent suite.
 ## 6. Templates & Themes
 
 - [x] `P1` 6–9 style presets shipped.
-- [ ] `P1` Template versioning + pinning per session.
+- [x] `P1` Template versioning + pinning per session.
 - [ ] `P2` Dark/light variants.
 
 ## 7. Assembly & Rendering
@@ -105,7 +106,7 @@ Part of the MyAI agent suite.
 
 ## 15. Quality & Testing
 
-- [ ] `P0` Unit tests per stage (parser, outline, generator).
+- [x] `P0` Unit tests per stage (parser, outline, generator).
 - [ ] `P0` End-to-end test: brief → downloadable deck.
 - [ ] `P1` Golden-set prompt evaluation.
 - [ ] `P1` Cancellation / retry tests.

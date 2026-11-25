@@ -59,10 +59,10 @@ export class MockModelGateway implements ModelGateway {
         subtitle: 'Generated draft',
         slides: [
           { index: 1, role: 'cover', headline: topic, points: ['Overview', 'Key insights', 'Next steps'] },
-          { index: 2, role: 'body', headline: 'Context', points: ['Why this matters', 'Current state', 'Opportunity'] },
-          { index: 3, role: 'body', headline: 'Key Points', points: ['Point one', 'Point two', 'Point three'] },
-          { index: 4, role: 'body', headline: 'Plan', points: ['Action', 'Owner', 'Timeline'] },
-          { index: 5, role: 'close', headline: 'Thank You', points: ['Questions?', 'Discussion', 'Next steps'] }
+          { index: 2, role: 'catalog', headline: 'Agenda', points: ['Context', 'Key points', 'Plan'] },
+          { index: 3, role: 'content', headline: 'Context', points: ['Why this matters', 'Current state', 'Opportunity'] },
+          { index: 4, role: 'content', headline: 'Plan', points: ['Action', 'Owner', 'Timeline'] },
+          { index: 5, role: 'end', headline: 'Thank You', points: ['Questions?', 'Discussion', 'Next steps'] }
         ]
       })
     }

@@ -19,6 +19,12 @@ describe('createDeckSchema', () => {
     })
     expect(r.success).toBe(true)
   })
+
+  it('accepts a known templateId and rejects unknown ids', () => {
+    expect(createDeckSchema.safeParse({ brief: 'Deck', options: { templateId: 'research-teal' } }).success).toBe(true)
+    expect(createDeckSchema.safeParse({ brief: 'Deck', options: { templateId: 'auto' } }).success).toBe(true)
+    expect(createDeckSchema.safeParse({ brief: 'Deck', options: { templateId: '../../etc/passwd' } }).success).toBe(false)
+  })
 })
 
 describe('editDeckSchema', () => {

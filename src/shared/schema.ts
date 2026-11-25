@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { STYLE_PRESETS } from './constants'
+import { TEMPLATE_IDS } from './templateCatalog'
 
 export const createDeckSchema = z.object({
   brief: z.string().trim().min(3).max(4000),
@@ -8,6 +9,7 @@ export const createDeckSchema = z.object({
       language: z.string().trim().max(32).optional(),
       pageCount: z.union([z.enum(['short', 'medium', 'long', '10-15']), z.number().int().min(3).max(30)]).optional(),
       style: z.enum(STYLE_PRESETS as [string, ...string[]]).optional(),
+      templateId: z.enum(TEMPLATE_IDS).optional(),
       audience: z.string().trim().max(200).optional(),
       referenceFiles: z.array(z.string().max(500)).max(10).optional(),
       includeCitations: z.boolean().optional()

@@ -17,6 +17,7 @@ export interface CreatePresentationOptions {
   language?: string
   pageCount?: PageCountBucket | number
   style?: StylePreset
+  templateId?: string
   audience?: string
   referenceFiles?: string[]
   includeCitations?: boolean
@@ -47,7 +48,13 @@ export interface PresentationSpec {
   includeCitations?: boolean
 }
 
-export type SlideRole = 'cover' | 'body' | 'close'
+/**
+ * Canonical roles mirror the five-part template preview: cover, catalog,
+ * chapter, content, end. Legacy body/close values are kept so older saved
+ * sessions remain readable; new outlines normalize them to content/end.
+ */
+export type SlideRole = 'cover' | 'catalog' | 'chapter' | 'content' | 'end' | 'body' | 'close'
+export type CanonicalSlideRole = Exclude<SlideRole, 'body' | 'close'>
 
 export interface OutlineSlide {
   index: number
@@ -72,7 +79,8 @@ export interface SlideContent {
 export interface Slide {
   index: number
   role: SlideRole
-  layout: 'cover' | 'title-and-bullets' | 'section' | 'closing'
+  // Canonical layouts match the five roles; legacy layouts stay readable.
+  layout: 'cover' | 'catalog' | 'chapter' | 'content' | 'end' | 'title-and-bullets' | 'section' | 'closing'
   theme: string
   content: SlideContent
   html: string
