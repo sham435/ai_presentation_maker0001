@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible defect in the desktop application or repository automation.
+title: "[Bug] "
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Configure a provider
+        3. Generate a deck
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: macOS 15.2, app version 0.1.0, Node 24
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      description: Never paste API keys, tokens or user credentials.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 Critical
+        - P1 High
+        - P2 Medium
+        - P3 Low

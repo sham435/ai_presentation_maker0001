@@ -1,0 +1,44 @@
+name: Feature request
+description: Propose a scoped capability for the Ultimate macOS Desktop v1 release.
+title: "[Feature] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Workstream
+      options:
+        - Architecture
+        - Provider Integration
+        - Security
+        - Persistence
+        - Telemetry
+        - Agent Pipeline
+        - UI/UX
+        - Export
+        - Testing
+        - Packaging
+        - Documentation
+        - Release

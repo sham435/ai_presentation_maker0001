@@ -1,0 +1,112 @@
+name: Agent Session
+description: Track one reproducible agent execution with scope, verification and outcome.
+title: "[Agent Session] "
+labels: ["type:agent-session", "status:ready"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Create one issue per actual agent run. Do not claim execution without a linked run, commit or PR reference.
+        Lifecycle: Created → Assigned → Agent Working → Verification → Review → Completed.
+        Failure lifecycle: Agent Working → Blocked → Investigation → Retry or Human Review.
+  - type: input
+    id: agent-name
+    attributes:
+      label: Agent name
+      description: Name of the agent that performed or will perform the work.
+      placeholder: OpenCode
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - claude
+        - opencode
+        - copilot
+        - human
+        - automated
+    validations:
+      required: true
+  - type: input
+    id: session-id
+    attributes:
+      label: Session ID
+      description: Unique ID for this run, for example task-014 or ses_abc123.
+    validations:
+      required: true
+  - type: input
+    id: branch
+    attributes:
+      label: Working branch
+      placeholder: feat/ultimate-macos-desktop-v1
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 Critical
+        - P1 High
+        - P2 Medium
+        - P3 Low
+    validations:
+      required: true
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      options:
+        - M1 — Provider Integration and Security
+        - M2 — Persistence and Observability
+        - M3 — Testing and Reliability
+        - M4 — Export and Delivery
+        - M5 — Ultimate macOS Release
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Single clear outcome for this session.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Exact in-scope work and explicit non-goals.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-files
+    attributes:
+      label: Expected files
+      description: Files or modules expected to change.
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: Checkable conditions that must be true before completion.
+    validations:
+      required: true
+  - type: textarea
+    id: verification-commands
+    attributes:
+      label: Verification commands
+      description: Commands with observed results.
+      placeholder: npm run verify
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result and completion summary
+      description: Actual outcome, commit SHAs, test results and blockers.
+  - type: input
+    id: related-pr
+    attributes:
+      label: Related PR
+      placeholder: "#123"
