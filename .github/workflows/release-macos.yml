@@ -1,0 +1,75 @@
+name: macOS Build and Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      attempt_signing:
+        description: "Attempt signing and notarization only when all Apple secrets are configured"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-macos-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build-macos
+    runs-on: macos-14
+    env:
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Rebuild native dependencies
+        run: npx electron-rebuild -f -w better-sqlite3
+      - name: Build application
+        run: npm run build
+      - name: Verify packaged application launch when verifier exists
+        run: |
+          if [ -f scripts/verify-packaged-app.mjs ]; then
+            node scripts/verify-packaged-app.mjs
+          else
+            echo "Packaged launch verifier not present yet"
+          fi
+      - name: Build unsigned DMG and ZIP (default)
+        if: inputs.attempt_signing != true || env.CSC_LINK == '' || env.CSC_KEY_PASSWORD == ''
+        run: npm run package:mac -- --publish never --mac --x64 --arm64 -c.mac.target=dmg -c.mac.target.zip
+      - name: Build signed DMG and ZIP when credentials are available
+        if: inputs.attempt_signing == true && env.CSC_LINK != '' && env.CSC_KEY_PASSWORD != '' && env.APPLE_ID != '' && env.APPLE_TEAM_ID != '' && env.APPLE_APP_SPECIFIC_PASSWORD != ''
+        run: npm run package:mac -- --publish never --mac --x64 --arm64 -c.mac.target=dmg -c.mac.target.zip
+      - name: Confirm unsigned release when Apple credentials are absent
+        if: env.CSC_LINK == '' || env.CSC_KEY_PASSWORD == ''
+        run: echo "UNSIGNED RELEASE: Apple credentials are absent; no notarization was attempted."
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+      - name: Attach artifacts to tag release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            dist/*.dmg
+            dist/*.zip

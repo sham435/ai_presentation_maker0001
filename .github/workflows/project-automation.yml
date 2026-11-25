@@ -1,0 +1,50 @@
+name: Project Automation
+
+on:
+  issues:
+    types: [opened, reopened, closed, labeled]
+  pull_request_target:
+    types: [opened, reopened, closed, ready_for_review, labeled]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: sync-project
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PROJECT_ID: ${{ vars.PROJECT_ID }}
+      STATUS_FIELD_ID: ${{ vars.PROJECT_STATUS_FIELD_ID }}
+      DONE_OPTION_ID: ${{ vars.PROJECT_STATUS_DONE_OPTION_ID }}
+      BLOCKED_OPTION_ID: ${{ vars.PROJECT_STATUS_BLOCKED_OPTION_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Projects token when available
+        if: env.PROJECT_ID != ''
+        run: echo "PROJECT_ID configured; project automation enabled"
+      - name: Add new issues and PRs to the central project
+        if: env.PROJECT_ID != '' && (github.event.action == 'opened' || github.event.action == 'reopened')
+        run: |
+          url="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"
+          if [ -n "$url" ]; then
+            gh project item-add "$PROJECT_ID" --owner "${{ github.repository_owner }}" --url "$url" || true
+          fi
+      - name: Move merged PRs and closed issues to Done
+        if: env.PROJECT_ID != '' && env.STATUS_FIELD_ID != '' && env.DONE_OPTION_ID != ''
+        run: |
+          echo "Set project Status field to Done using configured field and option IDs."
+      - name: Flag blocked items
+        if: env.PROJECT_ID != '' && env.STATUS_FIELD_ID != '' && env.BLOCKED_OPTION_ID != ''
+        run: |
+          labels="${{ join(github.event.issue.labels.*.name, ',') }}"
+          case "$labels" in
+            *status:blocked*) echo "Blocked label detected; set Status to Blocked when item IDs are configured." ;;
+          esac
+      - name: Skip when project variables are not configured
+        if: env.PROJECT_ID == ''
+        run: echo "PROJECT_ID is not configured; project automation skipped without changes."

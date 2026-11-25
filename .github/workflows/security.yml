@@ -1,0 +1,45 @@
+name: Security
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security:
+    name: security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+      - name: CodeQL init
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - name: CodeQL analyze
+        uses: github/codeql-action/analyze@v3
+      - name: IPC and credential exposure tests
+        run: npm run test:unit -- tests/credentials.test.ts tests/schema.test.ts tests/modelGateway.test.ts
+      - name: Secret scanning status
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          count=$(gh api "repos/$GITHUB_REPOSITORY/secret-scanning/alerts" --jq 'length' 2>/dev/null || echo "unavailable")
+          echo "Secret scanning alerts status: $count"
