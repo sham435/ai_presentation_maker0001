@@ -48,11 +48,6 @@ export interface PresentationSpec {
   includeCitations?: boolean
 }
 
-/**
- * Canonical roles mirror the five-part template preview: cover, catalog,
- * chapter, content, end. Legacy body/close values are kept so older saved
- * sessions remain readable; new outlines normalize them to content/end.
- */
 export type SlideRole = 'cover' | 'catalog' | 'chapter' | 'content' | 'end' | 'body' | 'close'
 export type CanonicalSlideRole = Exclude<SlideRole, 'body' | 'close'>
 
@@ -79,7 +74,6 @@ export interface SlideContent {
 export interface Slide {
   index: number
   role: SlideRole
-  // Canonical layouts match the five roles; legacy layouts stay readable.
   layout: 'cover' | 'catalog' | 'chapter' | 'content' | 'end' | 'title-and-bullets' | 'section' | 'closing'
   theme: string
   content: SlideContent
@@ -111,6 +105,32 @@ export type AgentEvent =
   | { type: 'warning'; sessionId: string; message: string }
   | { type: 'error'; sessionId: string; message: string; correlationId: string }
   | { type: 'completed'; sessionId: string; deck: DeckArtifact }
+
+export interface AppSettings {
+  endpoint: string
+  model: string
+  telemetryOptIn: boolean
+  hasKey: boolean
+  canEncrypt: boolean
+  mode: 'live' | 'offline-preview'
+}
+
+export interface AppSettingsUpdate {
+  endpoint: string
+  model: string
+  telemetryOptIn: boolean
+}
+
+export interface CredentialInput {
+  apiKey: string
+}
+
+export interface GatewayConfig {
+  endpoint?: string
+  apiKey?: string
+  model: string
+  timeoutMs?: number
+}
 
 export interface ApiResult<T> {
   ok: boolean

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { STYLE_PRESETS } from '@shared/constants'
 import { TEMPLATE_CATALOG, getTemplatesByStyle } from '@shared/templateCatalog'
 import TemplatePickerModal, { TemplateThumb } from './TemplatePickerModal'
-import type { AgentEvent, DeckSession, PageCountBucket, Slide, StylePreset } from '@shared/types'
+import SettingsModal from './components/SettingsModal'
+import type { AgentEvent, AppSettings, DeckSession, PageCountBucket, Slide, StylePreset } from '@shared/types'
 
 const defaultBrief = 'A 10-slide presentation about renewable energy for investors'
 
@@ -19,6 +20,8 @@ export default function App() {
   const [templateId, setTemplateId] = useState<string>('auto')
   const [includeCitations, setIncludeCitations] = useState(false)
   const [showTemplatePicker, setShowTemplatePicker] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null)
   const [sessions, setSessions] = useState<DeckSession[]>([])
   const [current, setCurrent] = useState<DeckSession | null>(null)
   const [slides, setSlides] = useState<Slide[]>([])
@@ -35,10 +38,11 @@ export default function App() {
       return
     }
     api.listSessions().then(setSessions).catch((e) => setError(String(e)))
+    api.getSettings().then(setAppSettings).catch(() => {})
     const off = api.onAgentEvent((event: AgentEvent) => {
       if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
       if (event.type === 'plan') {
-        setStatus(`Outline ready: ${event.outline.slides.length} slides`)
+        setStatus('Outline ready: ' + event.outline.slides.length + ' slides')
         setSlides([])
       }
       if (event.type === 'slide') {
@@ -46,7 +50,7 @@ export default function App() {
           const next = [...prev.filter((s) => s.index !== event.slide.index), event.slide]
           return next.sort((a, b) => a.index - b.index)
         })
-        setStatus(`Generating slide ${event.slide.index}...`)
+        setStatus('Generating slide ' + event.slide.index + '...')
       }
       if (event.type === 'completed') {
         setStatus('Deck completed')
@@ -63,7 +67,7 @@ export default function App() {
         setBusy(false)
       }
       if (event.type === 'warning') {
-        setStatus(`Warning: ${event.message}`)
+        setStatus('Warning: ' + event.message)
       }
     })
     return off
@@ -136,7 +140,6 @@ export default function App() {
     setCurrent(s)
     setSlides(s.slides || [])
     setStatus(s.status)
-    // Keep the gallery and style selector in sync with the loaded deck.
     setTemplateId(s.spec.templateId || 'auto')
     setStyle(s.spec.styleClass || 'Business')
     setError('')
@@ -213,7 +216,7 @@ export default function App() {
               <button
                 key={t.id}
                 type="button"
-                className={`template-item ${templateId === t.id ? 'active' : ''}`}
+                className={'template-item ' + (templateId === t.id ? 'active' : '')}
                 onClick={() => { setTemplateId(t.id); setStyle(t.style) }}
                 title={t.description}
               >
@@ -235,7 +238,7 @@ export default function App() {
           <label className="label">Sessions</label>
           {sessions.length === 0 && <div className="small">No sessions yet.</div>}
           {sessions.map((s) => (
-            <div key={s.id} className={`session-item ${current?.id === s.id ? 'active' : ''}`} onClick={() => openSession(s.id)}>
+            <div key={s.id} className={'session-item ' + (current?.id === s.id ? 'active' : '')} onClick={() => openSession(s.id)}>
               <div style={{ fontSize: 13, fontWeight: 600 }}>{s.outline?.title || s.spec.topic}</div>
               <div className="small">{s.status} · {s.slides?.length || 0} slides · v{s.artifact?.version || 0}</div>
             </div>
@@ -247,7 +250,11 @@ export default function App() {
         <div className="toolbar">
           <div>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{current?.outline?.title || 'Workspace'}</div>
-            <div className="status">Status: <span className={status === 'Deck completed' ? 'ok' : ''}>{status}</span>{current?.artifact ? ` · v${current.artifact.version} · ${current.artifact.slideCount} slides` : ''}</div>
+            <div className="status">Status: <span className={status === 'Deck completed' ? 'ok' : ''}>{status}</span>{current?.artifact ? ' · v' + current.artifact.version + ' · ' + current.artifact.slideCount + ' slides' : ''}</div>
+          </div>
+          <div className="toolbar-actions">
+            <span className={'mode-badge ' + (appSettings?.mode === 'live' ? 'live' : 'offline')}>{appSettings?.mode === 'live' ? 'Live model' : 'Offline Preview'}</span>
+            <button className="btn secondary" onClick={() => setShowSettings(true)}>Settings</button>
           </div>
         </div>
 
@@ -259,7 +266,7 @@ export default function App() {
               <div className="slide-card" key={slide.index}>
                 <div className="slide-meta"><span>Slide {slide.index} · {slide.role}</span><span>{slide.theme}</span></div>
                 <div className="slide-preview">
-                  <iframe title={`slide-${slide.index}`} sandbox="" srcDoc={`<!doctype html><html><body style="margin:0">${slide.html}</body></html>`} />
+                  <iframe title={'slide-' + slide.index} sandbox="" srcDoc={'<!doctype html><html><body style="margin:0">' + slide.html + '</body></html>'} />
                 </div>
               </div>
             ))}
@@ -271,6 +278,11 @@ export default function App() {
         selectedId={templateId}
         onSelect={(t) => { setTemplateId(t.id); setStyle(t.style) }}
         onClose={() => setShowTemplatePicker(false)}
+      />
+      <SettingsModal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        onSaved={setAppSettings}
       />
     </div>
   )

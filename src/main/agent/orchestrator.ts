@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import type { AgentEvent, CreatePresentationRequest, DeckSession, EditPresentationRequest } from '@shared/types'
 import { SessionStore } from '../store/sessionStore'
 import { logger } from '../telemetry/logger'
-import { createModelGateway } from './modelGateway'
+import { createModelGateway, type ModelGateway } from './modelGateway'
 import { parseCreateRequest } from './parser'
 import { generateOutline } from './outlineEngine'
 import { generateSlide } from './pageGenerator'
@@ -11,9 +11,11 @@ import { regenerateSlides } from './editOrchestrator'
 
 export class PresentationOrchestrator {
   private store = new SessionStore()
-  private model = createModelGateway()
+
+  constructor(private readonly modelFactory: () => ModelGateway = createModelGateway) {}
 
   async create(req: CreatePresentationRequest, emit: (e: AgentEvent) => void): Promise<DeckSession> {
+    const model = this.modelFactory()
     const spec = parseCreateRequest(req)
     const sessionId = spec.sessionId
     let session: DeckSession = {
@@ -26,14 +28,14 @@ export class PresentationOrchestrator {
     }
     this.store.save(session)
     try {
-      const outline = await generateOutline(spec, this.model)
+      const outline = await generateOutline(spec, model)
       session = { ...session, outline, status: 'generating' }
       this.store.save(session)
       emit({ type: 'plan', sessionId, outline })
 
       const slides = [] as DeckSession['slides']
       for (const plan of outline.slides) {
-        const slide = await generateSlide(spec, outline, plan, this.model)
+        const slide = await generateSlide(spec, outline, plan, model)
         slides.push(slide)
         session = { ...session, slides: [...slides] }
         this.store.save(session)
@@ -60,7 +62,7 @@ export class PresentationOrchestrator {
     const existing = this.store.get(req.sessionId)
     if (!existing) throw new Error('Session not found')
     try {
-      const updated = await regenerateSlides(req, existing, this.model)
+      const updated = await regenerateSlides(req, existing, this.modelFactory())
       const sessionId = existing.id
       this.store.save({ ...updated, status: 'generating' })
       emit({ type: 'plan', sessionId, outline: updated.outline })

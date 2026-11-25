@@ -2,9 +2,10 @@ import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { IPC } from '@shared/ipc'
-import { createDeckSchema, editDeckSchema } from '@shared/schema'
+import { createDeckSchema, credentialInputSchema, editDeckSchema, settingsUpdateSchema } from '@shared/schema'
 import type { CreatePresentationRequest, EditPresentationRequest } from '@shared/types'
 import { PresentationOrchestrator } from './agent/orchestrator'
+import { CredentialStore } from './credentials/keychain'
 
 let registered = false
 
@@ -19,7 +20,7 @@ function isSafeArtifactPath(filePath: unknown): filePath is string {
   return resolved.startsWith(root) && fs.existsSync(resolved) && fs.statSync(resolved).isFile()
 }
 
-export function registerIpc(orchestrator: PresentationOrchestrator) {
+export function registerIpc(orchestrator: PresentationOrchestrator, credentials: CredentialStore) {
   if (registered) return
   registered = true
 
@@ -28,6 +29,24 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
       if (!win.isDestroyed()) win.webContents.send(IPC.AGENT_EVENT, event)
     }
   }
+
+  ipcMain.handle(IPC.SETTINGS_GET, async () => credentials.getSettings())
+  ipcMain.handle(IPC.SETTINGS_SET, async (_e, request: unknown) => {
+    const parsed = settingsUpdateSchema.safeParse(request)
+    if (!parsed.success) throw new Error('Invalid settings: ' + parsed.error.issues.map((issue) => issue.message).join('; '))
+    return credentials.updateSettings(parsed.data)
+  })
+  ipcMain.handle(IPC.CREDENTIALS_STATUS, async () => {
+    const settings = credentials.getSettings()
+    return { hasKey: settings.hasKey, canEncrypt: settings.canEncrypt }
+  })
+  ipcMain.handle(IPC.CREDENTIALS_SET, async (_e, request: unknown) => {
+    const parsed = credentialInputSchema.safeParse(request)
+    if (!parsed.success) throw new Error('Invalid credential payload')
+    return credentials.setApiKey(parsed.data.apiKey)
+  })
+  ipcMain.handle(IPC.CREDENTIALS_CLEAR, async () => credentials.clearApiKey())
+  ipcMain.handle(IPC.GATEWAY_STATUS, async () => credentials.getSettings())
 
   ipcMain.handle(IPC.CREATE_DECK, async (_e, req: CreatePresentationRequest) => {
     const parsed = createDeckSchema.safeParse(req)

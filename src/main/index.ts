@@ -1,10 +1,10 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, safeStorage } from 'electron'
 import path from 'path'
 import { registerIpc } from './ipc'
 import { PresentationOrchestrator } from './agent/orchestrator'
+import { createModelGateway } from './agent/modelGateway'
+import { CredentialStore } from './credentials/keychain'
 import { logger } from './telemetry/logger'
-
-const orchestrator = new PresentationOrchestrator()
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -17,7 +17,10 @@ function createWindow() {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      webviewTag: false
     }
   })
 
@@ -29,7 +32,10 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  registerIpc(orchestrator)
+  const dataDirectory = path.join(app.getPath('userData'), 'data')
+  const credentials = new CredentialStore(path.join(dataDirectory, 'settings.json'), safeStorage)
+  const orchestrator = new PresentationOrchestrator(() => createModelGateway(credentials.getGatewayConfig()))
+  registerIpc(orchestrator, credentials)
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
