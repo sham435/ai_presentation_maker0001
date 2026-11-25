@@ -1,12 +1,21 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'fs'
 import path from 'path'
+import { nanoid } from 'nanoid'
 import { IPC } from '@shared/ipc'
-import { createDeckSchema, editDeckSchema } from '@shared/schema'
+import {
+  createDeckSchema,
+  credentialSetSchema,
+  editDeckSchema,
+  operationIdSchema,
+  settingsSetSchema
+} from '@shared/schema'
 import type { CreatePresentationRequest, EditPresentationRequest } from '@shared/types'
 import { PresentationOrchestrator } from './agent/orchestrator'
+import { credentialStatus, gatewayStatus, getCredentialStore } from './credentials/keychain'
 
 let registered = false
+const activeOperations = new Map<string, AbortController>()
 
 function artifactsRoot() {
   return path.join(process.env.STORAGE_DIR || path.join(app.getPath('userData'), 'data'), 'artifacts')
@@ -19,6 +28,10 @@ function isSafeArtifactPath(filePath: unknown): filePath is string {
   return resolved.startsWith(root) && fs.existsSync(resolved) && fs.statSync(resolved).isFile()
 }
 
+function validationMessage(error: { issues: Array<{ message: string }> }) {
+  return error.issues.map((issue) => issue.message).join('; ')
+}
+
 export function registerIpc(orchestrator: PresentationOrchestrator) {
   if (registered) return
   registered = true
@@ -29,23 +42,90 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
     }
   }
 
+  const withOperation = async (operationId: string | undefined, run: (signal: AbortSignal) => Promise<unknown>) => {
+    const id = operationId || nanoid()
+    const controller = new AbortController()
+    activeOperations.set(id, controller)
+    try {
+      return await run(controller.signal)
+    } finally {
+      activeOperations.delete(id)
+    }
+  }
+
   ipcMain.handle(IPC.CREATE_DECK, async (_e, req: CreatePresentationRequest) => {
     const parsed = createDeckSchema.safeParse(req)
-    if (!parsed.success) throw new Error(parsed.error.issues.map((i) => i.message).join('; '))
-    return orchestrator.create(parsed.data as CreatePresentationRequest, emit)
+    if (!parsed.success) throw new Error(validationMessage(parsed.error))
+    return withOperation(parsed.data.operationId, (signal) =>
+      orchestrator.create(parsed.data as CreatePresentationRequest, emit, signal)
+    )
   })
 
   ipcMain.handle(IPC.EDIT_DECK, async (_e, req: EditPresentationRequest) => {
     const parsed = editDeckSchema.safeParse(req)
-    if (!parsed.success) throw new Error(parsed.error.issues.map((i) => i.message).join('; '))
-    return orchestrator.edit(parsed.data as EditPresentationRequest, emit)
+    if (!parsed.success) throw new Error(validationMessage(parsed.error))
+    return withOperation(parsed.data.operationId, (signal) =>
+      orchestrator.edit(parsed.data as EditPresentationRequest, emit, signal)
+    )
+  })
+
+  ipcMain.handle(IPC.CANCEL_DECK, async (_e, operationId: string) => {
+    const parsed = operationIdSchema.safeParse(operationId)
+    if (!parsed.success) throw new Error(validationMessage(parsed.error))
+    activeOperations.get(parsed.data)?.abort()
+    return { ok: true }
   })
 
   ipcMain.handle(IPC.GET_SESSION, async (_e, id: string) => {
     if (typeof id !== 'string' || !id.trim()) throw new Error('Invalid session id')
     return orchestrator.getSession(id)
   })
+
   ipcMain.handle(IPC.LIST_SESSIONS, async () => orchestrator.listSessions())
+
+  ipcMain.handle(IPC.GET_SETTINGS, async () => {
+    const store = getCredentialStore()
+    const settings = store.getSettings()
+    const gateway = gatewayStatus()
+    return {
+      ...settings,
+      ...credentialStatus(),
+      mode: gateway.mode,
+      endpoint: gateway.endpoint || settings.endpoint,
+      model: gateway.model
+    }
+  })
+
+  ipcMain.handle(IPC.SET_SETTINGS, async (_e, patch: unknown) => {
+    const parsed = settingsSetSchema.safeParse(patch)
+    if (!parsed.success) throw new Error(validationMessage(parsed.error))
+    const data = parsed.data
+    const normalized = {
+      ...data,
+      endpoint: data.endpoint === '' ? undefined : data.endpoint
+    }
+    const settings = getCredentialStore().updateSettings(normalized)
+    const gateway = gatewayStatus()
+    return { ...settings, ...credentialStatus(), mode: gateway.mode }
+  })
+
+  ipcMain.handle(IPC.GET_CREDENTIAL_STATUS, async () => credentialStatus())
+
+  ipcMain.handle(IPC.SET_API_KEY, async (_e, payload: unknown) => {
+    const parsed = credentialSetSchema.safeParse(payload)
+    if (!parsed.success) throw new Error(validationMessage(parsed.error))
+    const store = getCredentialStore()
+    if (!store.canEncrypt()) throw new Error('OS keychain encryption is unavailable on this device')
+    store.setApiKey(parsed.data.apiKey)
+    return credentialStatus()
+  })
+
+  ipcMain.handle(IPC.CLEAR_API_KEY, async () => {
+    getCredentialStore().clearApiKey()
+    return credentialStatus()
+  })
+
+  ipcMain.handle(IPC.GET_GATEWAY_STATUS, async () => gatewayStatus())
 
   ipcMain.handle(IPC.EXPORT_DECK, async (e, filePath: string) => {
     if (!isSafeArtifactPath(filePath)) throw new Error('Invalid artifact path')
@@ -66,9 +146,14 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
     return { ok: true }
   })
 
-  ipcMain.handle(IPC.GET_APP_INFO, async () => ({
-    name: 'AI Presentation Maker',
-    version: app.getVersion(),
-    platform: process.platform
-  }))
+  ipcMain.handle(IPC.GET_APP_INFO, async () => {
+    const gateway = gatewayStatus()
+    return {
+      name: 'AI Presentation Maker',
+      version: app.getVersion(),
+      platform: process.platform,
+      mode: gateway.mode,
+      model: gateway.model
+    }
+  })
 }

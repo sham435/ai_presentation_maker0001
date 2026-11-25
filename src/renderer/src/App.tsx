@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { STYLE_PRESETS } from '@shared/constants'
 import { TEMPLATE_CATALOG, getTemplatesByStyle } from '@shared/templateCatalog'
 import TemplatePickerModal, { TemplateThumb } from './TemplatePickerModal'
+import SettingsModal, { type SettingsState } from './components/SettingsModal'
 import type { AgentEvent, DeckSession, PageCountBucket, Slide, StylePreset } from '@shared/types'
 
 const defaultBrief = 'A 10-slide presentation about renewable energy for investors'
 
 function getApi() {
   return (window as any).desktopApi as Window['desktopApi'] | undefined
+}
+
+function newOperationId() {
+  return globalThis.crypto?.randomUUID?.() || `op-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
 export default function App() {
@@ -26,7 +31,10 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [editInstruction, setEditInstruction] = useState('')
+  const [showSettings, setShowSettings] = useState(false)
+  const [settings, setSettings] = useState<SettingsState | null>(null)
   const activeSessionId = useRef<string | null>(null)
+  const activeOperationId = useRef<string | null>(null)
 
   useEffect(() => {
     const api = getApi()
@@ -35,6 +43,7 @@ export default function App() {
       return
     }
     api.listSessions().then(setSessions).catch((e) => setError(String(e)))
+    api.getSettings?.().then(setSettings).catch((e) => setError(String(e)))
     const off = api.onAgentEvent((event: AgentEvent) => {
       if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
       if (event.type === 'plan') {
@@ -62,6 +71,14 @@ export default function App() {
         setStatus('Error')
         setBusy(false)
       }
+      if (event.type === 'retry') {
+        setStatus(`Retrying (${event.attempt}/${event.maxRetries}): ${event.category}`)
+      }
+      if (event.type === 'cancelled') {
+        setStatus('Generation cancelled')
+        setBusy(false)
+        activeOperationId.current = null
+      }
       if (event.type === 'warning') {
         setStatus(`Warning: ${event.message}`)
       }
@@ -72,6 +89,8 @@ export default function App() {
   async function createDeck() {
     const api = getApi()
     if (!api) return
+    const operationId = newOperationId()
+    activeOperationId.current = operationId
     setBusy(true)
     setError('')
     setSlides([])
@@ -80,6 +99,7 @@ export default function App() {
     try {
       const session = await api.createDeck({
         brief,
+        operationId,
         options: {
           audience: audience || undefined,
           language: language || undefined,
@@ -98,6 +118,7 @@ export default function App() {
       setError(e?.message || String(e))
       setStatus('Error')
     } finally {
+      activeOperationId.current = null
       setBusy(false)
     }
   }
@@ -105,13 +126,16 @@ export default function App() {
   async function editDeck() {
     const api = getApi()
     if (!api || !current || !editInstruction.trim()) return
+    const operationId = newOperationId()
+    activeOperationId.current = operationId
     setBusy(true)
     setError('')
     setStatus('Applying edit...')
     try {
       const session = await api.editDeck({
         sessionId: current.id,
-        instruction: editInstruction.trim()
+        instruction: editInstruction.trim(),
+        operationId
       })
       activeSessionId.current = session.id
       setCurrent(session)
@@ -123,7 +147,19 @@ export default function App() {
       setError(e?.message || String(e))
       setStatus('Error')
     } finally {
+      activeOperationId.current = null
       setBusy(false)
+    }
+  }
+
+  async function cancelDeck() {
+    const api = getApi()
+    if (!api || !activeOperationId.current) return
+    try {
+      await api.cancelDeck?.(activeOperationId.current)
+      setStatus('Cancelling...')
+    } catch (e: any) {
+      setError(e?.message || String(e))
     }
   }
 
@@ -249,6 +285,14 @@ export default function App() {
             <div style={{ fontSize: 20, fontWeight: 700 }}>{current?.outline?.title || 'Workspace'}</div>
             <div className="status">Status: <span className={status === 'Deck completed' ? 'ok' : ''}>{status}</span>{current?.artifact ? ` · v${current.artifact.version} · ${current.artifact.slideCount} slides` : ''}</div>
           </div>
+          <div className="toolbar-actions">
+            {settings?.mode === 'offline-preview' && (
+              <span className="pill pill-warn" data-testid="offline-badge">Offline Preview</span>
+            )}
+            <span className="pill" data-testid="model-pill">{settings?.model || 'default model'}</span>
+            <button className="btn secondary small-btn" type="button" onClick={cancelDeck} disabled={!busy} data-testid="cancel-deck">Cancel</button>
+            <button className="btn secondary small-btn" type="button" onClick={() => setShowSettings(true)} data-testid="open-settings">Settings</button>
+          </div>
         </div>
 
         {slides.length === 0 ? (
@@ -271,6 +315,12 @@ export default function App() {
         selectedId={templateId}
         onSelect={(t) => { setTemplateId(t.id); setStyle(t.style) }}
         onClose={() => setShowTemplatePicker(false)}
+      />
+      <SettingsModal
+        open={showSettings}
+        settings={settings}
+        onClose={() => setShowSettings(false)}
+        onSaved={setSettings}
       />
     </div>
   )

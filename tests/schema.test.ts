@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createDeckSchema, editDeckSchema } from '../src/shared/schema'
+import { createDeckSchema, credentialSetSchema, editDeckSchema, settingsSetSchema } from '../src/shared/schema'
 
 describe('createDeckSchema', () => {
   it('accepts a valid brief', () => {
@@ -36,5 +36,26 @@ describe('editDeckSchema', () => {
   it('rejects missing instruction', () => {
     const r = editDeckSchema.safeParse({ sessionId: 'abc', instruction: '' })
     expect(r.success).toBe(false)
+  })
+
+  it('accepts an operation id for cancellation', () => {
+    expect(editDeckSchema.safeParse({ sessionId: 'abc', instruction: 'Shorten slide 2', operationId: 'op-1' }).success).toBe(true)
+  })
+})
+
+describe('settings and credential schemas', () => {
+  it('accepts http(s) endpoints and rejects javascript URLs', () => {
+    expect(settingsSetSchema.safeParse({ endpoint: 'https://api.example.com' }).success).toBe(true)
+    expect(settingsSetSchema.safeParse({ endpoint: 'http://localhost:11434' }).success).toBe(true)
+    expect(settingsSetSchema.safeParse({ endpoint: 'javascript:alert(1)' }).success).toBe(false)
+  })
+
+  it('allows an empty endpoint to clear the setting', () => {
+    expect(settingsSetSchema.safeParse({ endpoint: '' }).success).toBe(true)
+  })
+
+  it('rejects an empty API key', () => {
+    expect(credentialSetSchema.safeParse({ apiKey: '' }).success).toBe(false)
+    expect(credentialSetSchema.safeParse({ apiKey: 'sk-test' }).success).toBe(true)
   })
 })

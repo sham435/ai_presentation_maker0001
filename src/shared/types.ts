@@ -26,12 +26,15 @@ export interface CreatePresentationOptions {
 export interface CreatePresentationRequest {
   brief: string
   options?: CreatePresentationOptions
+  /** Correlates renderer cancel/retry actions with an in-flight generation. */
+  operationId?: string
 }
 
 export interface EditPresentationRequest {
   sessionId: string
   instruction: string
   targetSlides?: number[]
+  operationId?: string
 }
 
 export interface PresentationSpec {
@@ -109,11 +112,31 @@ export type AgentEvent =
   | { type: 'plan'; sessionId: string; outline: Outline }
   | { type: 'slide'; sessionId: string; slide: Slide }
   | { type: 'warning'; sessionId: string; message: string }
-  | { type: 'error'; sessionId: string; message: string; correlationId: string }
+  | { type: 'retry'; sessionId: string; attempt: number; maxRetries: number; category: string; correlationId: string }
+  | { type: 'error'; sessionId: string; message: string; correlationId: string; category?: string }
+  | { type: 'cancelled'; sessionId: string; correlationId: string }
   | { type: 'completed'; sessionId: string; deck: DeckArtifact }
 
 export interface ApiResult<T> {
   ok: boolean
   data?: T
   error?: string
+}
+
+export interface AppSettings {
+  endpoint?: string
+  model?: string
+  telemetryOptIn?: boolean
+}
+
+export interface CredentialStatus {
+  hasKey: boolean
+  canEncrypt: boolean
+}
+
+export interface GatewayStatus {
+  mode: 'live' | 'offline-preview'
+  endpoint?: string
+  model: string
+  hasKey: boolean
 }

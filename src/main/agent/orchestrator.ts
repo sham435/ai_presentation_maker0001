@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import type { AgentEvent, CreatePresentationRequest, DeckSession, EditPresentationRequest } from '@shared/types'
 import { SessionStore } from '../store/sessionStore'
 import { logger } from '../telemetry/logger'
-import { createModelGateway } from './modelGateway'
+import { createModelGateway, ModelGatewayError, type RetryInfo } from './modelGateway'
 import { parseCreateRequest } from './parser'
 import { generateOutline } from './outlineEngine'
 import { generateSlide } from './pageGenerator'
@@ -13,9 +13,43 @@ export class PresentationOrchestrator {
   private store = new SessionStore()
   private model = createModelGateway()
 
-  async create(req: CreatePresentationRequest, emit: (e: AgentEvent) => void): Promise<DeckSession> {
+  private retryHandler(sessionId: string, correlationId: string, emit: (e: AgentEvent) => void) {
+    return (info: RetryInfo) => {
+      emit({
+        type: 'retry',
+        sessionId,
+        attempt: info.attempt,
+        maxRetries: info.maxRetries,
+        category: info.category,
+        correlationId
+      })
+    }
+  }
+
+  private failure(
+    session: DeckSession,
+    err: unknown,
+    correlationId: string,
+    emit: (e: AgentEvent) => void
+  ): DeckSession {
+    const message = err instanceof Error ? err.message : String(err)
+    const category = err instanceof ModelGatewayError ? err.category : 'unknown'
+    const failed: DeckSession = { ...session, status: 'error' }
+    this.store.save(failed)
+    logger.error('presentation operation failed', { sessionId: session.id, category, correlationId, message })
+    if (category === 'cancelled') emit({ type: 'cancelled', sessionId: session.id, correlationId })
+    else emit({ type: 'error', sessionId: session.id, message, category, correlationId })
+    return failed
+  }
+
+  async create(
+    req: CreatePresentationRequest,
+    emit: (e: AgentEvent) => void,
+    signal?: AbortSignal
+  ): Promise<DeckSession> {
     const spec = parseCreateRequest(req)
     const sessionId = spec.sessionId
+    const correlationId = nanoid()
     let session: DeckSession = {
       id: sessionId,
       spec,
@@ -25,15 +59,29 @@ export class PresentationOrchestrator {
       updatedAt: new Date().toISOString()
     }
     this.store.save(session)
+
     try {
-      const outline = await generateOutline(spec, this.model)
+      const outline = await generateOutline(
+        spec,
+        this.model,
+        signal,
+        this.retryHandler(sessionId, correlationId, emit)
+      )
       session = { ...session, outline, status: 'generating' }
       this.store.save(session)
       emit({ type: 'plan', sessionId, outline })
 
       const slides = [] as DeckSession['slides']
       for (const plan of outline.slides) {
-        const slide = await generateSlide(spec, outline, plan, this.model)
+        if (signal?.aborted) throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
+        const slide = await generateSlide(
+          spec,
+          outline,
+          plan,
+          this.model,
+          signal,
+          this.retryHandler(sessionId, correlationId, emit)
+        )
         slides.push(slide)
         session = { ...session, slides: [...slides] }
         this.store.save(session)
@@ -46,21 +94,27 @@ export class PresentationOrchestrator {
       emit({ type: 'completed', sessionId, deck: artifact })
       return session
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
-      const correlationId = nanoid()
-      logger.error('create failed', { sessionId, message, correlationId })
-      session = { ...session, status: 'error' }
-      this.store.save(session)
-      emit({ type: 'error', sessionId, message, correlationId })
-      throw err
+      return this.failure(session, err, correlationId, emit)
     }
   }
 
-  async edit(req: EditPresentationRequest, emit: (e: AgentEvent) => void): Promise<DeckSession> {
+  async edit(
+    req: EditPresentationRequest,
+    emit: (e: AgentEvent) => void,
+    signal?: AbortSignal
+  ): Promise<DeckSession> {
     const existing = this.store.get(req.sessionId)
     if (!existing) throw new Error('Session not found')
+    const correlationId = nanoid()
+
     try {
-      const updated = await regenerateSlides(req, existing, this.model)
+      const updated = await regenerateSlides(
+        req,
+        existing,
+        this.model,
+        signal,
+        this.retryHandler(existing.id, correlationId, emit)
+      )
       const sessionId = existing.id
       this.store.save({ ...updated, status: 'generating' })
       emit({ type: 'plan', sessionId, outline: updated.outline })
@@ -71,10 +125,7 @@ export class PresentationOrchestrator {
       emit({ type: 'completed', sessionId, deck: artifact })
       return done
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
-      const correlationId = nanoid()
-      emit({ type: 'error', sessionId: req.sessionId, message, correlationId })
-      throw err
+      return this.failure(existing, err, correlationId, emit)
     }
   }
 

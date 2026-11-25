@@ -1,5 +1,5 @@
 import type { DeckSession, EditPresentationRequest, Outline } from '@shared/types'
-import type { ModelGateway } from './modelGateway'
+import type { ModelGateway, RetryInfo } from './modelGateway'
 import { generateSlide } from './pageGenerator'
 
 export function detectTargetSlides(req: EditPresentationRequest, session: DeckSession): number[] {
@@ -16,7 +16,9 @@ export function detectTargetSlides(req: EditPresentationRequest, session: DeckSe
 export async function regenerateSlides(
   req: EditPresentationRequest,
   session: DeckSession,
-  model: ModelGateway
+  model: ModelGateway,
+  signal?: AbortSignal,
+  onRetry?: (info: RetryInfo) => void
 ): Promise<DeckSession> {
   const targets = new Set(detectTargetSlides(req, session))
   const outline: Outline = {
@@ -30,7 +32,7 @@ export async function regenerateSlides(
   const slides = []
   for (const plan of outline.slides) {
     if (targets.has(plan.index)) {
-      slides.push(await generateSlide(session.spec, outline, plan, model))
+      slides.push(await generateSlide(session.spec, outline, plan, model, signal, onRetry))
     } else {
       const existing = session.slides.find((s) => s.index === plan.index)
       if (existing) slides.push(existing)

@@ -1,4 +1,4 @@
-import type { ModelGateway } from './modelGateway'
+import { ModelGatewayError, type ModelGateway, type RetryInfo } from './modelGateway'
 import { getTheme, type Theme } from './templates'
 import { escapeText, sanitizeHtml } from '../security/sanitize'
 import {
@@ -26,7 +26,9 @@ export async function generateSlide(
   spec: PresentationSpec,
   outline: Outline,
   slidePlan: OutlineSlide,
-  model: ModelGateway
+  model: ModelGateway,
+  signal?: AbortSignal,
+  onRetry?: (info: RetryInfo) => void
 ): Promise<Slide> {
   const system =
     'You write concise, professional presentation slide content. Return ONLY valid JSON. No scripts, no HTML, no markdown.'
@@ -49,7 +51,7 @@ Return JSON: {"headline":string,"bullets":string[],"notes"?:string,"citations"?:
     citations: []
   }
   try {
-    const raw = await model.complete({ system, prompt, temperature: 0.4 })
+    const raw = await model.complete({ system, prompt, temperature: 0.4, signal, onRetry })
     const match = raw.match(/\{[\s\S]*\}/)
     if (match) {
       const parsed = JSON.parse(match[0])
@@ -62,7 +64,9 @@ Return JSON: {"headline":string,"bullets":string[],"notes"?:string,"citations"?:
         }
       }
     }
-  } catch {
+  } catch (err) {
+    // Provider/transport failures must surface; only malformed model output falls back.
+    if (err instanceof ModelGatewayError) throw err
     // fallback to outline seed
   }
 

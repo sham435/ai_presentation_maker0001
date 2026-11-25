@@ -1,8 +1,14 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, safeStorage } from 'electron'
 import path from 'path'
 import { registerIpc } from './ipc'
 import { PresentationOrchestrator } from './agent/orchestrator'
+import { configureCredentials } from './credentials/keychain'
 import { logger } from './telemetry/logger'
+
+configureCredentials({
+  dataDir: () => path.join(app.getPath('userData'), 'data'),
+  storage: safeStorage
+})
 
 const orchestrator = new PresentationOrchestrator()
 
