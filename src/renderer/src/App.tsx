@@ -71,10 +71,10 @@ export default function App() {
         setStatus('Error')
         setBusy(false)
       }
-      if (event.type === 'retry') {
+      if (event.type === 'retry' && event.correlationId === activeOperationId.current) {
         setStatus(`Retrying (${event.attempt}/${event.maxRetries}): ${event.category}`)
       }
-      if (event.type === 'cancelled') {
+      if (event.type === 'cancelled' && event.correlationId === activeOperationId.current) {
         setStatus('Generation cancelled')
         setBusy(false)
         activeOperationId.current = null

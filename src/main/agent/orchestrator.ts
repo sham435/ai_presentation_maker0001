@@ -12,6 +12,21 @@ import { regenerateSlides } from './editOrchestrator'
 export class PresentationOrchestrator {
   private store = new SessionStore()
   private model = createModelGateway()
+  private latestOperationBySession = new Map<string, string>()
+
+  private claimOperation(sessionId: string, correlationId: string) {
+    this.latestOperationBySession.set(sessionId, correlationId)
+  }
+
+  private isCurrent(sessionId: string, correlationId: string) {
+    return this.latestOperationBySession.get(sessionId) === correlationId
+  }
+
+  private assertCurrent(sessionId: string, correlationId: string) {
+    if (!this.isCurrent(sessionId, correlationId)) {
+      throw new ModelGatewayError('Generation superseded by a newer operation', 'cancelled', false)
+    }
+  }
 
   private retryHandler(sessionId: string, correlationId: string, emit: (e: AgentEvent) => void) {
     return (info: RetryInfo) => {
@@ -34,6 +49,10 @@ export class PresentationOrchestrator {
   ): DeckSession {
     const message = err instanceof Error ? err.message : String(err)
     const category = err instanceof ModelGatewayError ? err.category : 'unknown'
+    if (!this.isCurrent(session.id, correlationId)) {
+      emit({ type: 'cancelled', sessionId: session.id, correlationId })
+      return session
+    }
     const failed: DeckSession = { ...session, status: 'error' }
     this.store.save(failed)
     logger.error('presentation operation failed', { sessionId: session.id, category, correlationId, message })
@@ -49,7 +68,8 @@ export class PresentationOrchestrator {
   ): Promise<DeckSession> {
     const spec = parseCreateRequest(req)
     const sessionId = spec.sessionId
-    const correlationId = nanoid()
+    const correlationId = req.operationId || nanoid()
+    this.claimOperation(sessionId, correlationId)
     let session: DeckSession = {
       id: sessionId,
       spec,
@@ -67,6 +87,7 @@ export class PresentationOrchestrator {
         signal,
         this.retryHandler(sessionId, correlationId, emit)
       )
+      this.assertCurrent(sessionId, correlationId)
       session = { ...session, outline, status: 'generating' }
       this.store.save(session)
       emit({ type: 'plan', sessionId, outline })
@@ -82,12 +103,14 @@ export class PresentationOrchestrator {
           signal,
           this.retryHandler(sessionId, correlationId, emit)
         )
+        this.assertCurrent(sessionId, correlationId)
         slides.push(slide)
         session = { ...session, slides: [...slides] }
         this.store.save(session)
         emit({ type: 'slide', sessionId, slide })
       }
 
+      this.assertCurrent(sessionId, correlationId)
       const artifact = renderDeck(sessionId, (session.artifact?.version || 0) + 1, outline.title, slides)
       session = { ...session, artifact, status: 'completed' }
       this.store.save(session)
@@ -105,7 +128,8 @@ export class PresentationOrchestrator {
   ): Promise<DeckSession> {
     const existing = this.store.get(req.sessionId)
     if (!existing) throw new Error('Session not found')
-    const correlationId = nanoid()
+    const correlationId = req.operationId || nanoid()
+    this.claimOperation(existing.id, correlationId)
 
     try {
       const updated = await regenerateSlides(
@@ -116,9 +140,11 @@ export class PresentationOrchestrator {
         this.retryHandler(existing.id, correlationId, emit)
       )
       const sessionId = existing.id
+      this.assertCurrent(sessionId, correlationId)
       this.store.save({ ...updated, status: 'generating' })
       emit({ type: 'plan', sessionId, outline: updated.outline })
       for (const slide of updated.slides) emit({ type: 'slide', sessionId, slide })
+      this.assertCurrent(sessionId, correlationId)
       const artifact = renderDeck(sessionId, (existing.artifact?.version || 0) + 1, updated.outline.title, updated.slides)
       const done: DeckSession = { ...updated, artifact, status: 'completed' }
       this.store.save(done)

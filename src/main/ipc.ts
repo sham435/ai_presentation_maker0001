@@ -2,15 +2,21 @@ import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { nanoid } from 'nanoid'
+import type { ZodType } from 'zod'
 import { IPC } from '@shared/ipc'
 import {
   createDeckSchema,
   credentialSetSchema,
+  credentialStatusSchema,
   editDeckSchema,
+  gatewayDiagnosisSchema,
+  gatewayStatusSchema,
   operationIdSchema,
-  settingsSetSchema
+  settingsSetSchema,
+  settingsStateSchema
 } from '@shared/schema'
 import type { CreatePresentationRequest, EditPresentationRequest } from '@shared/types'
+import { diagnoseGateway } from './agent/modelGateway'
 import { PresentationOrchestrator } from './agent/orchestrator'
 import { credentialStatus, gatewayStatus, getCredentialStore } from './credentials/keychain'
 
@@ -30,6 +36,12 @@ function isSafeArtifactPath(filePath: unknown): filePath is string {
 
 function validationMessage(error: { issues: Array<{ message: string }> }) {
   return error.issues.map((issue) => issue.message).join('; ')
+}
+
+function validated<T>(schema: ZodType<T>, value: unknown): T {
+  const parsed = schema.safeParse(value)
+  if (!parsed.success) throw new Error(`Invalid IPC response: ${validationMessage(parsed.error)}`)
+  return parsed.data
 }
 
 export function registerIpc(orchestrator: PresentationOrchestrator) {
@@ -87,13 +99,13 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
     const store = getCredentialStore()
     const settings = store.getSettings()
     const gateway = gatewayStatus()
-    return {
+    return validated(settingsStateSchema, {
       ...settings,
       ...credentialStatus(),
       mode: gateway.mode,
       endpoint: gateway.endpoint || settings.endpoint,
       model: gateway.model
-    }
+    })
   })
 
   ipcMain.handle(IPC.SET_SETTINGS, async (_e, patch: unknown) => {
@@ -106,10 +118,16 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
     }
     const settings = getCredentialStore().updateSettings(normalized)
     const gateway = gatewayStatus()
-    return { ...settings, ...credentialStatus(), mode: gateway.mode }
+    return validated(settingsStateSchema, {
+      ...settings,
+      ...credentialStatus(),
+      mode: gateway.mode,
+      endpoint: gateway.endpoint || settings.endpoint,
+      model: gateway.model
+    })
   })
 
-  ipcMain.handle(IPC.GET_CREDENTIAL_STATUS, async () => credentialStatus())
+  ipcMain.handle(IPC.GET_CREDENTIAL_STATUS, async () => validated(credentialStatusSchema, credentialStatus()))
 
   ipcMain.handle(IPC.SET_API_KEY, async (_e, payload: unknown) => {
     const parsed = credentialSetSchema.safeParse(payload)
@@ -117,15 +135,17 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
     const store = getCredentialStore()
     if (!store.canEncrypt()) throw new Error('OS keychain encryption is unavailable on this device')
     store.setApiKey(parsed.data.apiKey)
-    return credentialStatus()
+    return validated(credentialStatusSchema, credentialStatus())
   })
 
   ipcMain.handle(IPC.CLEAR_API_KEY, async () => {
     getCredentialStore().clearApiKey()
-    return credentialStatus()
+    return validated(credentialStatusSchema, credentialStatus())
   })
 
-  ipcMain.handle(IPC.GET_GATEWAY_STATUS, async () => gatewayStatus())
+  ipcMain.handle(IPC.GET_GATEWAY_STATUS, async () => validated(gatewayStatusSchema, gatewayStatus()))
+
+  ipcMain.handle(IPC.DIAGNOSE_GATEWAY, async () => validated(gatewayDiagnosisSchema, await diagnoseGateway()))
 
   ipcMain.handle(IPC.EXPORT_DECK, async (e, filePath: string) => {
     if (!isSafeArtifactPath(filePath)) throw new Error('Invalid artifact path')

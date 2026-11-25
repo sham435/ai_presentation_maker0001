@@ -6,6 +6,7 @@ import type {
   CreatePresentationRequest,
   CredentialStatus,
   EditPresentationRequest,
+  GatewayDiagnosis,
   GatewayStatus
 } from '@shared/types'
 
@@ -18,11 +19,12 @@ const api = {
   openArtifact: (filePath: string) => ipcRenderer.invoke(IPC.OPEN_ARTIFACT, filePath),
   cancelDeck: (operationId: string) => ipcRenderer.invoke(IPC.CANCEL_DECK, operationId),
   getSettings: () => ipcRenderer.invoke(IPC.GET_SETTINGS) as Promise<AppSettings & CredentialStatus & { mode: GatewayStatus['mode'] }>,
-  setSettings: (patch: AppSettings) => ipcRenderer.invoke(IPC.SET_SETTINGS, patch) as Promise<AppSettings & CredentialStatus>,
+  setSettings: (patch: AppSettings) => ipcRenderer.invoke(IPC.SET_SETTINGS, patch) as Promise<AppSettings & CredentialStatus & { mode: GatewayStatus['mode'] }>,
   getCredentialStatus: () => ipcRenderer.invoke(IPC.GET_CREDENTIAL_STATUS) as Promise<CredentialStatus>,
   setApiKey: (apiKey: string) => ipcRenderer.invoke(IPC.SET_API_KEY, { apiKey }) as Promise<CredentialStatus>,
   clearApiKey: () => ipcRenderer.invoke(IPC.CLEAR_API_KEY) as Promise<CredentialStatus>,
   getGatewayStatus: () => ipcRenderer.invoke(IPC.GET_GATEWAY_STATUS) as Promise<GatewayStatus>,
+  diagnoseGateway: () => ipcRenderer.invoke(IPC.DIAGNOSE_GATEWAY) as Promise<GatewayDiagnosis>,
   getAppInfo: () => ipcRenderer.invoke(IPC.GET_APP_INFO),
   onAgentEvent: (handler: (event: AgentEvent) => void) => {
     const listener = (_: unknown, event: AgentEvent) => handler(event)

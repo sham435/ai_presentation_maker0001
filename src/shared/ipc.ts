@@ -13,6 +13,7 @@ export const IPC = {
   SET_API_KEY: 'credentials:set',
   CLEAR_API_KEY: 'credentials:clear',
   GET_GATEWAY_STATUS: 'gateway:status',
+  DIAGNOSE_GATEWAY: 'gateway:diagnose',
   AGENT_EVENT: 'agent:event'
 } as const
 

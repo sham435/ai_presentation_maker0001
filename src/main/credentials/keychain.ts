@@ -15,6 +15,7 @@ export interface SettingsData {
 }
 
 interface StoredSettings extends SettingsData {
+  version?: number
   apiKeyCipher?: string
 }
 
@@ -66,17 +67,42 @@ const settingsFile = () => path.join(dataDir(), 'settings.json')
 
 function readStored(filePath: string): StoredSettings {
   try {
-    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8')) as StoredSettings
-    return parsed && typeof parsed === 'object' ? parsed : {}
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<string, unknown>
+    if (!parsed || typeof parsed !== 'object') return {}
+    return {
+      version: typeof parsed.version === 'number' ? parsed.version : 1,
+      endpoint: typeof parsed.endpoint === 'string' ? parsed.endpoint : undefined,
+      model: typeof parsed.model === 'string' ? parsed.model : undefined,
+      telemetryOptIn: parsed.telemetryOptIn === true,
+      apiKeyCipher: typeof parsed.apiKeyCipher === 'string' ? parsed.apiKeyCipher : undefined
+    }
   } catch {
     return {}
   }
 }
 
 function writeStored(filePath: string, data: StoredSettings): void {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true })
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), { encoding: 'utf8', mode: 0o600 })
-  fs.chmodSync(filePath, 0o600)
+  const dir = path.dirname(filePath)
+  fs.mkdirSync(dir, { recursive: true, mode: 0o700 })
+  fs.chmodSync(dir, 0o700)
+  const tempFile = `${filePath}.${process.pid}.${Date.now()}.tmp`
+  try {
+    fs.writeFileSync(
+      tempFile,
+      JSON.stringify({ version: 1, ...data }, null, 2),
+      { encoding: 'utf8', mode: 0o600 }
+    )
+    fs.chmodSync(tempFile, 0o600)
+    fs.renameSync(tempFile, filePath)
+    fs.chmodSync(filePath, 0o600)
+  } catch (error) {
+    try {
+      fs.unlinkSync(tempFile)
+    } catch {
+      // best-effort cleanup
+    }
+    throw error
+  }
 }
 
 function publicSettings(data: StoredSettings): SettingsData {
@@ -163,11 +189,26 @@ export function credentialStatus() {
   return { hasKey: store.hasApiKey(), canEncrypt: store.canEncrypt() }
 }
 
+/** Strips userinfo from an endpoint before it is sent to the renderer. */
+export function sanitizeEndpoint(value?: string): string | undefined {
+  if (!value) return undefined
+  try {
+    const url = new URL(value)
+    if (url.username || url.password) {
+      url.username = ''
+      url.password = ''
+    }
+    return url.toString().replace(/\/$/, '')
+  } catch {
+    return '[invalid endpoint]'
+  }
+}
+
 export function gatewayStatus() {
   const config = getGatewayConfig()
   return {
     mode: config.baseUrl ? ('live' as const) : ('offline-preview' as const),
-    endpoint: config.baseUrl,
+    endpoint: sanitizeEndpoint(config.baseUrl),
     model: config.model,
     hasKey: Boolean(config.apiKey)
   }

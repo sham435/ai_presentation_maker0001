@@ -1,5 +1,6 @@
+import type { GatewayDiagnosis } from '@shared/types'
 import { logger } from '../telemetry/logger'
-import { getGatewayConfig, type GatewayConfig } from '../credentials/keychain'
+import { getGatewayConfig, sanitizeEndpoint, type GatewayConfig } from '../credentials/keychain'
 
 export interface RetryInfo {
   attempt: number
@@ -11,6 +12,7 @@ export interface ModelRequest {
   system: string
   prompt: string
   temperature?: number
+  maxTokens?: number
   signal?: AbortSignal
   onRetry?: (info: RetryInfo) => void
 }
@@ -34,7 +36,8 @@ export class ModelGatewayError extends Error {
   constructor(
     message: string,
     readonly category: GatewayErrorCategory,
-    readonly retryable: boolean
+    readonly retryable: boolean,
+    readonly statusCode?: number
   ) {
     super(message)
     this.name = 'ModelGatewayError'
@@ -46,11 +49,11 @@ const cancelled = () => new ModelGatewayError('Generation cancelled', 'cancelled
 
 function statusError(status: number): ModelGatewayError {
   if (status === 401 || status === 403) {
-    return new ModelGatewayError(`Model gateway authorization failed (${status})`, 'auth', false)
+    return new ModelGatewayError(`Model gateway authorization failed (${status})`, 'auth', false, status)
   }
-  if (status === 429) return new ModelGatewayError('Model gateway rate limit reached', 'rate-limit', true)
-  if (status >= 500) return new ModelGatewayError(`Model gateway server error (${status})`, 'server', true)
-  return new ModelGatewayError(`Model gateway rejected the request (${status})`, 'request', false)
+  if (status === 429) return new ModelGatewayError('Model gateway rate limit reached', 'rate-limit', true, status)
+  if (status >= 500) return new ModelGatewayError(`Model gateway server error (${status})`, 'server', true, status)
+  return new ModelGatewayError(`Model gateway rejected the request (${status})`, 'request', false, status)
 }
 
 function normalizeError(err: unknown, timedOut: boolean): ModelGatewayError {
@@ -94,10 +97,11 @@ export class HttpModelGateway implements ModelGateway {
       let timedOut = false
       const onAbort = () => controller.abort()
       req.signal?.addEventListener('abort', onAbort, { once: true })
+      const timeoutMs = Math.max(1000, Number(process.env.MODEL_TIMEOUT_MS || 30000) || 30000)
       const timeout = setTimeout(() => {
         timedOut = true
         controller.abort()
-      }, Number(process.env.MODEL_TIMEOUT_MS || 30000))
+      }, timeoutMs)
 
       try {
         const res = await fetch(`${config.baseUrl.replace(/\/$/, '')}/v1/chat/completions`, {
@@ -109,6 +113,7 @@ export class HttpModelGateway implements ModelGateway {
           body: JSON.stringify({
             model: config.model,
             temperature: req.temperature ?? 0.2,
+            ...(req.maxTokens ? { max_tokens: req.maxTokens } : {}),
             messages: [
               { role: 'system', content: req.system },
               { role: 'user', content: req.prompt }
@@ -118,7 +123,11 @@ export class HttpModelGateway implements ModelGateway {
         })
         if (!res.ok) throw statusError(res.status)
         const json = (await res.json()) as any
-        return json.choices?.[0]?.message?.content || ''
+        const content = json?.choices?.[0]?.message?.content
+        if (typeof content !== 'string' || !content.trim()) {
+          throw new ModelGatewayError('Model gateway returned an empty response', 'parse', false, res.status)
+        }
+        return content
       } catch (err) {
         if (req.signal?.aborted) throw cancelled()
         const error = normalizeError(err, timedOut)
@@ -178,4 +187,41 @@ class DynamicModelGateway implements ModelGateway {
 
 export function createModelGateway(configProvider: () => GatewayConfig = getGatewayConfig): ModelGateway {
   return new DynamicModelGateway(configProvider)
+}
+
+/** Performs a real, minimal provider request and returns only sanitized status data. */
+export async function diagnoseGateway(
+  configProvider: () => GatewayConfig = getGatewayConfig
+): Promise<GatewayDiagnosis> {
+  const config = configProvider()
+  const base: GatewayDiagnosis = {
+    ok: false,
+    mode: config.baseUrl ? 'live' : 'offline-preview',
+    endpoint: sanitizeEndpoint(config.baseUrl),
+    model: config.model,
+    latencyMs: 0
+  }
+  if (!config.baseUrl) {
+    return { ...base, category: 'config', message: 'No endpoint configured; Offline Preview is active.' }
+  }
+
+  const started = Date.now()
+  try {
+    await new HttpModelGateway(configProvider).complete({
+      system: 'Connectivity check only. Respond with exactly OK.',
+      prompt: 'Reply with OK.',
+      temperature: 0,
+      maxTokens: 8
+    })
+    return { ...base, ok: true, latencyMs: Date.now() - started, message: 'Provider responded successfully.' }
+  } catch (err) {
+    const error = err instanceof ModelGatewayError ? err : new ModelGatewayError(String(err), 'network', false)
+    return {
+      ...base,
+      latencyMs: Date.now() - started,
+      category: error.category,
+      statusCode: error.statusCode,
+      message: error.message
+    }
+  }
 }

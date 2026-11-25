@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   createModelGateway,
+  diagnoseGateway,
   HttpModelGateway,
   ModelGatewayError,
   type GatewayConfig
@@ -23,9 +24,13 @@ function config(overrides: Partial<GatewayConfig> = {}): GatewayConfig {
   return { baseUrl: 'https://gateway.example.com', model: 'gpt-test', apiKey: 'sk-test', ...overrides }
 }
 
+const originalTimeout = process.env.MODEL_TIMEOUT_MS
+
 afterEach(() => {
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
+  if (originalTimeout === undefined) delete process.env.MODEL_TIMEOUT_MS
+  else process.env.MODEL_TIMEOUT_MS = originalTimeout
 })
 
 describe('HttpModelGateway', () => {
@@ -96,6 +101,57 @@ describe('HttpModelGateway', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
+  it('does not retry a 403 response', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(errorResponse(403))
+    vi.stubGlobal('fetch', fetchMock)
+    const gateway = new HttpModelGateway(() => config())
+
+    await expect(gateway.complete(request)).rejects.toMatchObject({
+      category: 'auth',
+      retryable: false,
+      statusCode: 403
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('retries transient 5xx responses and then fails with a server error', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(errorResponse(503))
+    vi.stubGlobal('fetch', fetchMock)
+    const onRetry = vi.fn()
+    const gateway = new HttpModelGateway(() => config())
+
+    await expect(gateway.complete({ ...request, onRetry })).rejects.toMatchObject({
+      category: 'server',
+      statusCode: 503
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(onRetry).toHaveBeenCalledTimes(2)
+  })
+
+  it('rejects an empty choices array as a non-retryable parse error', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ choices: [] }) })
+    vi.stubGlobal('fetch', fetchMock)
+    const gateway = new HttpModelGateway(() => config())
+
+    await expect(gateway.complete(request)).rejects.toMatchObject({ category: 'parse', retryable: false })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('classifies a stalled request as a timeout', async () => {
+    process.env.MODEL_TIMEOUT_MS = '1000'
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, init: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init.signal?.addEventListener('abort', () => reject(new Error('aborted')))
+        })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    const gateway = new HttpModelGateway(() => config())
+
+    await expect(gateway.complete(request)).rejects.toMatchObject({ category: 'timeout', retryable: true })
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
   it('rejects when no endpoint is configured', async () => {
     const gateway = new HttpModelGateway(() => config({ baseUrl: undefined }))
     await expect(gateway.complete(request)).rejects.toMatchObject({ category: 'config', retryable: false })
@@ -110,5 +166,30 @@ describe('dynamic gateway', () => {
       prompt: 'Return JSON outline\nTopic: Offline deck'
     })
     expect(JSON.parse(raw).title).toBe('Offline deck')
+  })
+})
+
+describe('gateway diagnostics', () => {
+  it('performs a real provider call and returns sanitized status', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(okResponse('OK'))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await diagnoseGateway(() => config())
+
+    expect(result).toMatchObject({ ok: true, mode: 'live', model: 'gpt-test' })
+    expect(result).not.toHaveProperty('apiKey')
+    expect(result.endpoint).toBe('https://gateway.example.com')
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    expect((init.body as string)).toContain('max_tokens')
+  })
+
+  it('reports Offline Preview without making a request', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await diagnoseGateway(() => ({ model: 'default' }))
+
+    expect(result).toMatchObject({ ok: false, mode: 'offline-preview', category: 'config' })
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

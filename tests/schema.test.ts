@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { createDeckSchema, credentialSetSchema, editDeckSchema, settingsSetSchema } from '../src/shared/schema'
+import {
+  createDeckSchema,
+  credentialSetSchema,
+  credentialStatusSchema,
+  editDeckSchema,
+  gatewayDiagnosisSchema,
+  gatewayStatusSchema,
+  settingsSetSchema,
+  settingsStateSchema
+} from '../src/shared/schema'
 
 describe('createDeckSchema', () => {
   it('accepts a valid brief', () => {
@@ -54,8 +63,30 @@ describe('settings and credential schemas', () => {
     expect(settingsSetSchema.safeParse({ endpoint: '' }).success).toBe(true)
   })
 
+  it('rejects public plaintext endpoints and credentials embedded in URLs', () => {
+    expect(settingsSetSchema.safeParse({ endpoint: 'http://api.example.com' }).success).toBe(false)
+    expect(settingsSetSchema.safeParse({ endpoint: 'https://user:pass@api.example.com' }).success).toBe(false)
+    expect(settingsSetSchema.safeParse({ endpoint: 'http://192.168.1.50:11434' }).success).toBe(true)
+  })
+
   it('rejects an empty API key', () => {
     expect(credentialSetSchema.safeParse({ apiKey: '' }).success).toBe(false)
     expect(credentialSetSchema.safeParse({ apiKey: 'sk-test' }).success).toBe(true)
+  })
+})
+
+describe('renderer-bound response schemas', () => {
+  const status = { hasKey: true, canEncrypt: true }
+
+  it('accepts valid status payloads', () => {
+    expect(credentialStatusSchema.safeParse(status).success).toBe(true)
+    expect(gatewayStatusSchema.safeParse({ mode: 'live', model: 'gpt-test', hasKey: true }).success).toBe(true)
+    expect(gatewayDiagnosisSchema.safeParse({ ok: true, mode: 'live', model: 'gpt-test', latencyMs: 12 }).success).toBe(true)
+  })
+
+  it('rejects any credential material in responses', () => {
+    expect(credentialStatusSchema.safeParse({ ...status, apiKey: 'sk-secret' }).success).toBe(false)
+    expect(settingsStateSchema.safeParse({ ...status, mode: 'live', apiKeyCipher: 'cipher' }).success).toBe(false)
+    expect(gatewayDiagnosisSchema.safeParse({ ok: true, mode: 'live', model: 'm', latencyMs: 1, apiKey: 'sk-secret' }).success).toBe(false)
   })
 })

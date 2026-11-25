@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { AppSettings, CredentialStatus, GatewayStatus } from '@shared/types'
+import type { AppSettings, CredentialStatus, GatewayDiagnosis, GatewayStatus } from '@shared/types'
 
 export interface SettingsState extends AppSettings, CredentialStatus {
   mode: GatewayStatus['mode']
@@ -20,7 +20,9 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
   const [endpoint, setEndpoint] = useState('')
   const [model, setModel] = useState('')
   const [apiKey, setApiKey] = useState('')
+  const [telemetryOptIn, setTelemetryOptIn] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [testing, setTesting] = useState(false)
   const [message, setMessage] = useState('')
   const dialogRef = useRef<HTMLDivElement>(null)
   const firstFieldRef = useRef<HTMLInputElement>(null)
@@ -30,6 +32,7 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
     setEndpoint(settings.endpoint || '')
     setModel(settings.model || 'gpt-4.1-mini')
     setApiKey('')
+    setTelemetryOptIn(Boolean(settings.telemetryOptIn))
     setMessage('')
   }, [open, settings])
 
@@ -77,7 +80,11 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
     setBusy(true)
     setMessage('')
     try {
-      const next = await api.setSettings({ endpoint: endpoint.trim(), model: model.trim() })
+      const next = await api.setSettings({
+        endpoint: endpoint.trim(),
+        model: model.trim(),
+        telemetryOptIn
+      })
       onSaved(next as SettingsState)
       setMessage('Settings saved.')
     } catch (error) {
@@ -101,6 +108,27 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
       setMessage(error instanceof Error ? error.message : String(error))
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function testConnection() {
+    const api = getApi()
+    if (!api || busy || testing) return
+    setTesting(true)
+    setMessage('Checking the configured provider...')
+    try {
+      const result = await api.diagnoseGateway?.() as GatewayDiagnosis | undefined
+      if (!result) {
+        setMessage('Connection diagnostics are unavailable in this build.')
+      } else if (result.ok) {
+        setMessage(`Connection OK · ${result.model} · ${result.latencyMs}ms`)
+      } else {
+        setMessage(`${result.message || 'Connection failed'}${result.statusCode ? ` (HTTP ${result.statusCode})` : ''}`)
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error))
+    } finally {
+      setTesting(false)
     }
   }
 
@@ -166,6 +194,15 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
                 data-testid="settings-api-key"
               />
             </label>
+            <label className="settings-checkbox">
+              <input
+                type="checkbox"
+                checked={telemetryOptIn}
+                onChange={(event) => setTelemetryOptIn(event.target.checked)}
+                data-testid="settings-telemetry"
+              />
+              Enable local diagnostic telemetry (opt-in; never leaves this device)
+            </label>
           </div>
 
           <div className="settings-status">
@@ -179,9 +216,10 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
           {message && <div className="settings-message" role="status">{message}</div>}
 
           <div className="settings-actions">
-            <button className="btn" type="button" onClick={saveSettings} disabled={busy} data-testid="settings-save">Save settings</button>
-            <button className="btn secondary" type="button" onClick={saveKey} disabled={busy || !settings?.canEncrypt || !apiKey.trim()} data-testid="settings-save-key">Store key</button>
-            <button className="btn secondary" type="button" onClick={clearKey} disabled={busy || !settings?.hasKey} data-testid="settings-clear-key">Clear key</button>
+            <button className="btn" type="button" onClick={saveSettings} disabled={busy || testing} data-testid="settings-save">Save settings</button>
+            <button className="btn secondary" type="button" onClick={saveKey} disabled={busy || testing || !settings?.canEncrypt || !apiKey.trim()} data-testid="settings-save-key">Store key</button>
+            <button className="btn secondary" type="button" onClick={testConnection} disabled={busy || testing} data-testid="settings-test-connection">{testing ? 'Testing...' : 'Test connection'}</button>
+            <button className="btn secondary" type="button" onClick={clearKey} disabled={busy || testing || !settings?.hasKey} data-testid="settings-clear-key">Clear key</button>
           </div>
         </div>
       </div>

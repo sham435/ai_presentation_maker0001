@@ -140,3 +140,15 @@ export interface GatewayStatus {
   model: string
   hasKey: boolean
 }
+
+/** Sanitized result of a real provider connectivity probe; never includes credentials. */
+export interface GatewayDiagnosis {
+  ok: boolean
+  mode: GatewayStatus['mode']
+  endpoint?: string
+  model: string
+  latencyMs: number
+  statusCode?: number
+  category?: string
+  message?: string
+}

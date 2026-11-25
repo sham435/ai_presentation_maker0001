@@ -5,6 +5,7 @@ import path from 'path'
 import {
   createCredentialStore,
   gatewayConfigFrom,
+  sanitizeEndpoint,
   type SafeStorageLike
 } from '../src/main/credentials/keychain'
 
@@ -42,6 +43,8 @@ describe('credential store', () => {
     expect(raw).not.toContain('sk-super-secret')
     expect(raw).toContain('apiKeyCipher')
     expect(fs.statSync(file).mode & 0o777).toBe(0o600)
+    expect(fs.statSync(path.dirname(file)).mode & 0o777).toBe(0o700)
+    expect(fs.readdirSync(path.dirname(file)).some((name) => name.endsWith('.tmp'))).toBe(false)
   })
 
   it('never exposes the key or ciphertext in public settings', () => {
@@ -73,6 +76,18 @@ describe('credential store', () => {
     const store = createCredentialStore(mockStorage(), file)
     expect(store.getSettings()).toEqual({ endpoint: undefined, model: undefined, telemetryOptIn: false })
     expect(store.hasApiKey()).toBe(false)
+  })
+
+  it('never exposes environment keys through public settings', () => {
+    const file = path.join(tempDir(), 'settings.json')
+    const store = createCredentialStore(mockStorage(), file)
+    const config = gatewayConfigFrom(store, {
+      MODEL_GATEWAY_URL: 'https://env.example.com',
+      MODEL_GATEWAY_API_KEY: 'sk-env-secret'
+    })
+    expect(config.apiKey).toBe('sk-env-secret')
+    expect(store.getSettings()).not.toHaveProperty('apiKey')
+    expect(JSON.stringify(store.getSettings())).not.toContain('sk-env-secret')
   })
 
   it('clears the stored key without dropping other settings', () => {
@@ -117,5 +132,10 @@ describe('gateway config resolution', () => {
     expect(config.baseUrl).toBe('https://env.example.com')
     expect(config.apiKey).toBe('sk-env')
     expect(config.model).toBe('env-model')
+  })
+
+  it('strips userinfo from endpoints before they reach the renderer', () => {
+    expect(sanitizeEndpoint('https://user:secret@api.example.com/v1')).toBe('https://api.example.com/v1')
+    expect(sanitizeEndpoint(undefined)).toBeUndefined()
   })
 })
