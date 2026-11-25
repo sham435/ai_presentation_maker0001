@@ -10,7 +10,7 @@ export async function generateSlide(
   model: ModelGateway
 ): Promise<Slide> {
   const system =
-    'You write concise presentation slide content. Return ONLY valid JSON. No scripts, no HTML, no markdown.'
+    'You write concise, professional presentation slide content. Return ONLY valid JSON. No scripts, no HTML, no markdown.'
   const prompt = `Return JSON slide content for this slide.
 Deck title: ${outline.title}
 Topic: ${spec.topic}
@@ -20,9 +20,15 @@ Style: ${spec.styleClass}
 Headline: ${slidePlan.headline}
 Role: ${slidePlan.role}
 Seed points: ${slidePlan.points.join('; ')}
-Return JSON: {"headline":string,"bullets":string[],"notes"?:string}`
+Include citations: ${spec.includeCitations ? 'yes' : 'no'}
+Return JSON: {"headline":string,"bullets":string[],"notes"?:string,"citations"?:string[]}`
 
-  let content = { headline: slidePlan.headline, bullets: slidePlan.points, notes: '' }
+  let content: { headline: string; bullets: string[]; notes: string; citations: string[] } = {
+    headline: slidePlan.headline,
+    bullets: slidePlan.points,
+    notes: '',
+    citations: []
+  }
   try {
     const raw = await model.complete({ system, prompt, temperature: 0.4 })
     const match = raw.match(/\{[\s\S]*\}/)
@@ -32,7 +38,8 @@ Return JSON: {"headline":string,"bullets":string[],"notes"?:string}`
         content = {
           headline: String(parsed.headline),
           bullets: parsed.bullets.map((b: unknown) => String(b)).slice(0, 6),
-          notes: parsed.notes ? String(parsed.notes) : ''
+          notes: parsed.notes ? String(parsed.notes) : '',
+          citations: Array.isArray(parsed.citations) ? parsed.citations.map((c: unknown) => String(c)).slice(0, 4) : []
         }
       }
     }
@@ -55,12 +62,17 @@ Return JSON: {"headline":string,"bullets":string[],"notes"?:string}`
 }
 
 function renderSlideHtml(
-  slide: { headline: string; bullets: string[]; role: string },
+  slide: { headline: string; bullets: string[]; role: string; citations?: string[] },
   layout: Slide['layout'],
   theme: ReturnType<typeof getTheme>
 ): string {
   const bullets = slide.bullets
     .map((b) => `<li>${escapeText(b)}</li>`)
+    .join('')
+  const citations = (slide.citations || [])
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((c) => `<li>${escapeText(c)}</li>`)
     .join('')
   const titleSize = layout === 'cover' ? '52px' : '38px'
   const align = layout === 'cover' || layout === 'closing' ? 'center' : 'left'
@@ -70,6 +82,7 @@ function renderSlideHtml(
     <div style="color:${theme.accent};font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;">${escapeText(slide.role)}</div>
     <h1 style="font-size:${titleSize};line-height:1.1;margin:0 0 24px 0;">${escapeText(slide.headline)}</h1>
     ${bullets ? `<ul style="font-size:24px;line-height:1.6;color:${theme.muted};padding-left:28px;margin:0;">${bullets}</ul>` : ''}
+    ${citations ? `<div style="margin-top:28px;padding-top:14px;border-top:1px solid ${theme.accent}33;color:${theme.muted};font-size:14px;line-height:1.5;"><div style="font-weight:700;color:${theme.accent};margin-bottom:6px;">Sources</div><ul style="margin:0;padding-left:18px;">${citations}</ul></div>` : ''}
   </div>
 </section>`
 }

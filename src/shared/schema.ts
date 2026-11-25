@@ -9,7 +9,8 @@ export const createDeckSchema = z.object({
       pageCount: z.union([z.enum(['short', 'medium', 'long', '10-15']), z.number().int().min(3).max(30)]).optional(),
       style: z.enum(STYLE_PRESETS as [string, ...string[]]).optional(),
       audience: z.string().trim().max(200).optional(),
-      referenceFiles: z.array(z.string().max(500)).max(10).optional()
+      referenceFiles: z.array(z.string().max(500)).max(10).optional(),
+      includeCitations: z.boolean().optional()
     })
     .optional()
 })

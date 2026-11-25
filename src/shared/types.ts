@@ -19,6 +19,7 @@ export interface CreatePresentationOptions {
   style?: StylePreset
   audience?: string
   referenceFiles?: string[]
+  includeCitations?: boolean
 }
 
 export interface CreatePresentationRequest {
@@ -43,6 +44,7 @@ export interface PresentationSpec {
   templateId: string
   referenceDocs: string[]
   brief: string
+  includeCitations?: boolean
 }
 
 export type SlideRole = 'cover' | 'body' | 'close'
@@ -64,6 +66,7 @@ export interface SlideContent {
   headline: string
   bullets: string[]
   notes?: string
+  citations?: string[]
 }
 
 export interface Slide {

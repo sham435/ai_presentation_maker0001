@@ -39,7 +39,8 @@ export function parseCreateRequest(req: CreatePresentationRequest): Presentation
     styleClass: normalizeStyle(req.options?.style),
     templateId: 'auto',
     referenceDocs: req.options?.referenceFiles || [],
-    brief
+    brief,
+    includeCitations: Boolean(req.options?.includeCitations)
   }
 }
 

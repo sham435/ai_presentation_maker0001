@@ -14,6 +14,7 @@ export default function App() {
   const [language, setLanguage] = useState('')
   const [pageCount, setPageCount] = useState<PageCountBucket | string>('10-15')
   const [style, setStyle] = useState<StylePreset>('Business')
+  const [includeCitations, setIncludeCitations] = useState(false)
   const [sessions, setSessions] = useState<DeckSession[]>([])
   const [current, setCurrent] = useState<DeckSession | null>(null)
   const [slides, setSlides] = useState<Slide[]>([])
@@ -79,7 +80,8 @@ export default function App() {
           audience: audience || undefined,
           language: language || undefined,
           pageCount: pageCount as PageCountBucket,
-          style
+          style,
+          includeCitations
         }
       })
       activeSessionId.current = session.id
@@ -173,6 +175,11 @@ export default function App() {
               </select>
             </div>
           </div>
+          <div style={{ height: 10 }} />
+          <label className="small" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="checkbox" checked={includeCitations} onChange={(e) => setIncludeCitations(e.target.checked)} />
+            Include citations / sources
+          </label>
           <div style={{ height: 12 }} />
           <div className="actions">
             <button className="btn" onClick={createDeck} disabled={busy || !brief.trim()}>{busy ? 'Working...' : 'Generate Deck'}</button>
