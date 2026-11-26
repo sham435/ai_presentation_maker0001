@@ -1,0 +1,12 @@
+command	start_utc	end_utc	exit_code	summary
+ci	2026-11-26T00:13:29Z	2026-11-26T00:13:44Z	0	npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me;6 moderate severity vulnerabilities;
+audit	2026-11-26T00:13:44Z	2026-11-26T00:13:45Z	0	6 moderate severity vulnerabilities;
+typecheck	2026-11-26T00:13:45Z	2026-11-26T00:13:46Z	0	
+lint	2026-11-26T00:13:46Z	2026-11-26T00:13:47Z	0	
+unit	2026-11-26T00:13:47Z	2026-11-26T00:13:52Z	0	 Test Files  13 passed (13);      Tests  71 passed (71);
+integration	2026-11-26T00:13:52Z	2026-11-26T00:13:53Z	0	 Test Files  6 passed (6);      Tests  18 passed (18);
+build	2026-11-26T00:13:53Z	2026-11-26T00:13:53Z	0	✓ built in 15ms;✓ built in 5ms;✓ built in 31ms;
+verify	2026-11-26T00:13:53Z	2026-11-26T00:14:00Z	0	✓ built in 30ms; Test Files  13 passed (13);      Tests  71 passed (71);
+smoke	2026-11-26T00:14:00Z	2026-11-26T00:14:00Z	0	
+command_surface	2026-11-26T00:14:00Z	2026-11-26T00:14:00Z	0	
+prod_deps	2026-11-26T00:14:00Z	2026-11-26T00:14:00Z	0	

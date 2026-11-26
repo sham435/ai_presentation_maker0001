@@ -46,6 +46,8 @@ export default function App() {
     api.getSettings?.().then(setSettings).catch((e) => setError(String(e)))
     const off = api.onAgentEvent((event: AgentEvent) => {
       if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
+      // Correlated events from a superseded or finished operation must not update the UI.
+      if ('correlationId' in event && event.correlationId !== activeOperationId.current) return
       if (event.type === 'plan') {
         setStatus(`Outline ready: ${event.outline.slides.length} slides`)
         setSlides([])

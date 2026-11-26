@@ -7,7 +7,8 @@ import type {
   CredentialStatus,
   EditPresentationRequest,
   GatewayDiagnosis,
-  GatewayStatus
+  GatewayStatus,
+  TelemetryRecord
 } from '@shared/types'
 
 const api = {
@@ -25,6 +26,8 @@ const api = {
   clearApiKey: () => ipcRenderer.invoke(IPC.CLEAR_API_KEY) as Promise<CredentialStatus>,
   getGatewayStatus: () => ipcRenderer.invoke(IPC.GET_GATEWAY_STATUS) as Promise<GatewayStatus>,
   diagnoseGateway: () => ipcRenderer.invoke(IPC.DIAGNOSE_GATEWAY) as Promise<GatewayDiagnosis>,
+  getTelemetry: () => ipcRenderer.invoke(IPC.TELEMETRY_LIST) as Promise<TelemetryRecord[]>,
+  clearTelemetry: () => ipcRenderer.invoke(IPC.TELEMETRY_CLEAR) as Promise<{ ok: boolean }>,
   getAppInfo: () => ipcRenderer.invoke(IPC.GET_APP_INFO),
   onAgentEvent: (handler: (event: AgentEvent) => void) => {
     const listener = (_: unknown, event: AgentEvent) => handler(event)

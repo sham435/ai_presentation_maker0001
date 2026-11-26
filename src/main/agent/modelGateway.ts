@@ -15,6 +15,8 @@ export interface ModelRequest {
   maxTokens?: number
   signal?: AbortSignal
   onRetry?: (info: RetryInfo) => void
+  /** Opaque operation identifier; never a prompt, key, or user content. */
+  correlationId?: string
 }
 
 export interface ModelGateway {
@@ -132,7 +134,11 @@ export class HttpModelGateway implements ModelGateway {
         if (req.signal?.aborted) throw cancelled()
         const error = normalizeError(err, timedOut)
         if (!error.retryable || attempt === MAX_RETRIES) throw error
-        logger.warn('model gateway retrying', { category: error.category, attempt: attempt + 1 })
+        logger.warn('model gateway retrying', {
+          category: error.category,
+          attempt: attempt + 1,
+          correlationId: req.correlationId
+        })
         req.onRetry?.({ attempt: attempt + 1, maxRetries: MAX_RETRIES, category: error.category })
       } finally {
         clearTimeout(timeout)

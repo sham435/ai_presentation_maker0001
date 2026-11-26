@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import type { AppSettings, CredentialStatus, GatewayDiagnosis, GatewayStatus } from '@shared/types'
+import type { AppSettings, CredentialStatus, GatewayDiagnosis, GatewayStatus, TelemetryRecord } from '@shared/types'
+import TelemetryViewer from './TelemetryViewer'
 
 export interface SettingsState extends AppSettings, CredentialStatus {
   mode: GatewayStatus['mode']
@@ -24,6 +25,8 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
   const [busy, setBusy] = useState(false)
   const [testing, setTesting] = useState(false)
   const [message, setMessage] = useState('')
+  const [telemetryRecords, setTelemetryRecords] = useState<TelemetryRecord[]>([])
+  const [showTelemetry, setShowTelemetry] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
   const firstFieldRef = useRef<HTMLInputElement>(null)
 
@@ -33,6 +36,8 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
     setModel(settings.model || 'gpt-4.1-mini')
     setApiKey('')
     setTelemetryOptIn(Boolean(settings.telemetryOptIn))
+    setShowTelemetry(false)
+    setTelemetryRecords([])
     setMessage('')
   }, [open, settings])
 
@@ -148,6 +153,38 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
     }
   }
 
+  async function viewTelemetry() {
+    const api = getApi()
+    if (!api || busy) return
+    setBusy(true)
+    setMessage('')
+    try {
+      const records = await api.getTelemetry()
+      setTelemetryRecords(records || [])
+      setShowTelemetry(true)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function clearTelemetryRecords() {
+    const api = getApi()
+    if (!api || busy) return
+    setBusy(true)
+    setMessage('')
+    try {
+      await api.clearTelemetry()
+      setTelemetryRecords([])
+      setMessage('Local diagnostics cleared.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error))
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" ref={dialogRef}>
@@ -220,7 +257,17 @@ export default function SettingsModal({ open, settings, onClose, onSaved }: Sett
             <button className="btn secondary" type="button" onClick={saveKey} disabled={busy || testing || !settings?.canEncrypt || !apiKey.trim()} data-testid="settings-save-key">Store key</button>
             <button className="btn secondary" type="button" onClick={testConnection} disabled={busy || testing} data-testid="settings-test-connection">{testing ? 'Testing...' : 'Test connection'}</button>
             <button className="btn secondary" type="button" onClick={clearKey} disabled={busy || testing || !settings?.hasKey} data-testid="settings-clear-key">Clear key</button>
+            <button className="btn secondary" type="button" onClick={viewTelemetry} disabled={busy || testing} data-testid="settings-view-telemetry">View diagnostics</button>
           </div>
+
+          {showTelemetry && (
+            <TelemetryViewer
+              records={telemetryRecords}
+              busy={busy}
+              onRefresh={viewTelemetry}
+              onClear={clearTelemetryRecords}
+            />
+          )}
         </div>
       </div>
     </div>

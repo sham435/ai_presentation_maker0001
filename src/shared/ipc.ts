@@ -14,6 +14,8 @@ export const IPC = {
   CLEAR_API_KEY: 'credentials:clear',
   GET_GATEWAY_STATUS: 'gateway:status',
   DIAGNOSE_GATEWAY: 'gateway:diagnose',
+  TELEMETRY_LIST: 'telemetry:list',
+  TELEMETRY_CLEAR: 'telemetry:clear',
   AGENT_EVENT: 'agent:event'
 } as const
 

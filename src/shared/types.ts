@@ -95,6 +95,8 @@ export interface DeckArtifact {
   slideCount: number
   filePath: string
   previewPath?: string
+  checksum?: string
+  templateVersion?: string
   createdAt: string
 }
 
@@ -106,16 +108,47 @@ export interface DeckSession {
   artifact?: DeckArtifact
   status: 'idle' | 'planning' | 'generating' | 'completed' | 'error'
   updatedAt: string
+  /** Optimistic-concurrency revision; never derived from user content. */
+  revision?: number
+  operationId?: string
+}
+
+/** Allowlisted, local-only diagnostic record. No prompts, keys or slide text. */
+export interface TelemetryRecord {
+  ts: string
+  level: 'info' | 'warn' | 'error'
+  message: string
+  sessionId?: string
+  correlationId?: string
+  stage?: string
+  status?: 'ok' | 'error' | 'cancelled'
+  durationMs?: number
+  errorCategory?: string
+  category?: string
+  attempt?: number
+  maxRetries?: number
+  artifactVersion?: number
+  slideCount?: number
+  mode?: string
 }
 
 export type AgentEvent =
-  | { type: 'plan'; sessionId: string; outline: Outline }
-  | { type: 'slide'; sessionId: string; slide: Slide }
+  | { type: 'plan'; sessionId: string; correlationId: string; outline: Outline }
+  | { type: 'slide'; sessionId: string; correlationId: string; slide: Slide }
   | { type: 'warning'; sessionId: string; message: string }
   | { type: 'retry'; sessionId: string; attempt: number; maxRetries: number; category: string; correlationId: string }
+  | {
+      type: 'stage'
+      sessionId: string
+      correlationId: string
+      stage: string
+      status: 'ok' | 'error' | 'cancelled'
+      durationMs: number
+      errorCategory?: string
+    }
   | { type: 'error'; sessionId: string; message: string; correlationId: string; category?: string }
   | { type: 'cancelled'; sessionId: string; correlationId: string }
-  | { type: 'completed'; sessionId: string; deck: DeckArtifact }
+  | { type: 'completed'; sessionId: string; correlationId: string; deck: DeckArtifact }
 
 export interface ApiResult<T> {
   ok: boolean

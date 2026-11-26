@@ -13,12 +13,15 @@ import {
   gatewayStatusSchema,
   operationIdSchema,
   settingsSetSchema,
-  settingsStateSchema
+  settingsStateSchema,
+  telemetryListSchema
 } from '@shared/schema'
 import type { CreatePresentationRequest, EditPresentationRequest } from '@shared/types'
 import { diagnoseGateway } from './agent/modelGateway'
 import { PresentationOrchestrator } from './agent/orchestrator'
 import { credentialStatus, gatewayStatus, getCredentialStore } from './credentials/keychain'
+import { defaultDataDir } from './store/db'
+import { clearTelemetry, readTelemetry, setTelemetrySetting } from './telemetry/jsonl'
 
 let registered = false
 const activeOperations = new Map<string, AbortController>()
@@ -117,6 +120,7 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
       endpoint: data.endpoint === '' ? undefined : data.endpoint
     }
     const settings = getCredentialStore().updateSettings(normalized)
+    setTelemetrySetting(Boolean(settings.telemetryOptIn), defaultDataDir())
     const gateway = gatewayStatus()
     return validated(settingsStateSchema, {
       ...settings,
@@ -146,6 +150,13 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
   ipcMain.handle(IPC.GET_GATEWAY_STATUS, async () => validated(gatewayStatusSchema, gatewayStatus()))
 
   ipcMain.handle(IPC.DIAGNOSE_GATEWAY, async () => validated(gatewayDiagnosisSchema, await diagnoseGateway()))
+
+  ipcMain.handle(IPC.TELEMETRY_LIST, async () => validated(telemetryListSchema, readTelemetry()))
+
+  ipcMain.handle(IPC.TELEMETRY_CLEAR, async () => {
+    clearTelemetry()
+    return { ok: true }
+  })
 
   ipcMain.handle(IPC.EXPORT_DECK, async (e, filePath: string) => {
     if (!isSafeArtifactPath(filePath)) throw new Error('Invalid artifact path')

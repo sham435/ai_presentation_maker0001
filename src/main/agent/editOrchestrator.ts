@@ -18,7 +18,8 @@ export async function regenerateSlides(
   session: DeckSession,
   model: ModelGateway,
   signal?: AbortSignal,
-  onRetry?: (info: RetryInfo) => void
+  onRetry?: (info: RetryInfo) => void,
+  correlationId?: string
 ): Promise<DeckSession> {
   const targets = new Set(detectTargetSlides(req, session))
   const outline: Outline = {
@@ -32,7 +33,7 @@ export async function regenerateSlides(
   const slides = []
   for (const plan of outline.slides) {
     if (targets.has(plan.index)) {
-      slides.push(await generateSlide(session.spec, outline, plan, model, signal, onRetry))
+      slides.push(await generateSlide(session.spec, outline, plan, model, signal, onRetry, correlationId))
     } else {
       const existing = session.slides.find((s) => s.index === plan.index)
       if (existing) slides.push(existing)

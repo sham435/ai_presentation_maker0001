@@ -107,3 +107,26 @@ export const gatewayDiagnosisSchema = z
     message: z.string().optional()
   })
   .strict()
+
+/** Strict allowlist: renderer-bound telemetry can never carry user content or keys. */
+export const telemetryRecordSchema = z
+  .object({
+    ts: z.string(),
+    level: z.enum(['info', 'warn', 'error']),
+    message: z.string().max(200),
+    sessionId: z.string().max(200).optional(),
+    correlationId: z.string().max(200).optional(),
+    stage: z.string().max(80).optional(),
+    status: z.enum(['ok', 'error', 'cancelled']).optional(),
+    durationMs: z.number().int().nonnegative().optional(),
+    errorCategory: z.string().max(80).optional(),
+    category: z.string().max(80).optional(),
+    attempt: z.number().int().nonnegative().optional(),
+    maxRetries: z.number().int().nonnegative().optional(),
+    artifactVersion: z.number().int().nonnegative().optional(),
+    slideCount: z.number().int().nonnegative().optional(),
+    mode: z.string().max(80).optional()
+  })
+  .strict()
+
+export const telemetryListSchema = z.array(telemetryRecordSchema)

@@ -12,7 +12,7 @@ permissions:
 jobs:
   visual:
     name: visual
-    runs-on: macos-14
+    runs-on: macos-26
     env:
       VISUAL_BASELINE_MODE: verify
     steps:

@@ -28,7 +28,8 @@ export async function generateSlide(
   slidePlan: OutlineSlide,
   model: ModelGateway,
   signal?: AbortSignal,
-  onRetry?: (info: RetryInfo) => void
+  onRetry?: (info: RetryInfo) => void,
+  correlationId?: string
 ): Promise<Slide> {
   const system =
     'You write concise, professional presentation slide content. Return ONLY valid JSON. No scripts, no HTML, no markdown.'
@@ -51,7 +52,7 @@ Return JSON: {"headline":string,"bullets":string[],"notes"?:string,"citations"?:
     citations: []
   }
   try {
-    const raw = await model.complete({ system, prompt, temperature: 0.4, signal, onRetry })
+    const raw = await model.complete({ system, prompt, temperature: 0.4, signal, onRetry, correlationId })
     const match = raw.match(/\{[\s\S]*\}/)
     if (match) {
       const parsed = JSON.parse(match[0])

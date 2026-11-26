@@ -2,7 +2,7 @@ appId: com.myai.ai-presentation-maker
 productName: AI Presentation Maker
 directories:
   buildResources: resources
-  output: release
+  output: dist
 files:
   - out/**
   - package.json

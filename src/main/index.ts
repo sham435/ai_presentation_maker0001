@@ -2,15 +2,21 @@ import { app, BrowserWindow, safeStorage } from 'electron'
 import path from 'path'
 import { registerIpc } from './ipc'
 import { PresentationOrchestrator } from './agent/orchestrator'
-import { configureCredentials } from './credentials/keychain'
+import { configureCredentials, getCredentialStore } from './credentials/keychain'
+import { getDatabase } from './store/db'
+import { migrateLegacySessions } from './store/migrateJson'
+import { SessionStore } from './store/sessionStore'
+import { configureTelemetry, readTelemetrySetting } from './telemetry/jsonl'
 import { logger } from './telemetry/logger'
 
+const dataDir = () => path.join(app.getPath('userData'), 'data')
+process.env.STORAGE_DIR ||= dataDir()
+
 configureCredentials({
-  dataDir: () => path.join(app.getPath('userData'), 'data'),
+  dataDir,
   storage: safeStorage
 })
-
-const orchestrator = new PresentationOrchestrator()
+configureTelemetry({ enabled: false, dataDir: dataDir() })
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -35,13 +41,15 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  const db = getDatabase(path.join(dataDir(), 'presentation.db'))
+  migrateLegacySessions(db, path.join(dataDir(), 'sessions.json'))
+  const telemetryOptIn = readTelemetrySetting(db) || Boolean(getCredentialStore().getSettings().telemetryOptIn)
+  configureTelemetry({ enabled: telemetryOptIn, dataDir: dataDir() })
+
+  const orchestrator = new PresentationOrchestrator({ store: new SessionStore({ db }) })
   registerIpc(orchestrator)
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-}).catch((err) => logger.error('app failed', { err: String(err) }))
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+}).catch((_err) => logger.error('app startup failed', { errorCategory: 'startup' }))

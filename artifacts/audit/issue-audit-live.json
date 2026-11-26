@@ -1,0 +1,3589 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "live-audit-2026-11-25T23:50:28Z",
+  "generated_at": "2026-11-25T23:50:28Z",
+  "repository": {
+    "full_name": "sham435/ai_presentation_maker0001",
+    "url": "https://github.com/sham435/ai_presentation_maker0001",
+    "default_branch": "main",
+    "visibility": "public",
+    "observed_at": "2026-11-25T23:46:21Z"
+  },
+  "git_state": {
+    "local_branch": "feat/slice-2-sqlite-persistence",
+    "local_head_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+    "working_tree": "dirty",
+    "working_tree_details": [
+      "M src/main/agent/modelGateway.ts",
+      "M src/main/agent/orchestrator.ts",
+      "M src/main/agent/renderer.ts",
+      "M src/main/index.ts",
+      "M src/main/ipc.ts",
+      "M src/main/store/sessionStore.ts",
+      "M src/main/telemetry/logger.ts",
+      "M src/preload/index.ts",
+      "M src/renderer/src/components/SettingsModal.tsx",
+      "M src/renderer/src/styles.css",
+      "M src/shared/ipc.ts",
+      "M src/shared/schema.ts",
+      "M src/shared/types.ts",
+      "?? artifacts/",
+      "?? src/main/store/artifactStore.ts",
+      "?? src/main/store/db.ts",
+      "?? src/main/store/migrateJson.ts",
+      "?? src/main/store/migrations.ts",
+      "?? src/main/telemetry/jsonl.ts",
+      "?? src/renderer/src/components/TelemetryViewer.tsx",
+      "?? tests/integration/"
+    ],
+    "remote_feature_branch": "feat/ultimate-macos-desktop-v1",
+    "remote_feature_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+    "remote_main_sha": "678d89bfe06d2d26525076f7dc70c5c1006e4e6b",
+    "feature_ahead_by": 8,
+    "feature_behind_by": 0,
+    "main_modified": false,
+    "main_modification_evidence": "No git operations were performed on main during this audit. Local main remains 579ecfdc203f872c99b4099aa5b3a00211a0a386 (historically 1 ahead of origin/main); origin/main remains 678d89bfe06d2d26525076f7dc70c5c1006e4e6b.",
+    "observed_at": "2026-11-25T23:46:21Z"
+  },
+  "audit_summary": {
+    "total_issues_audited": 18,
+    "complete": 0,
+    "partial": 13,
+    "not_started": 5,
+    "blocked": 0,
+    "not_audited": 0,
+    "closure_eligible": 0
+  },
+  "issues": [
+    {
+      "number": 1,
+      "title": "Slice 2 — SQLite persistence and observability",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/1",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:19Z",
+      "body_sha256": "459c10c82ef4a5a4f9424c098e420244858e62973ac514ef56191443b82dcd9f",
+      "parent_issue": null,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#1-AC1",
+          "requirement": "Sessions survive app restarts and interrupted writes.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-001"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-006",
+            "EV-TEST-008"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720937897"
+          ],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Capture restart survival runtime evidence"
+          ]
+        },
+        {
+          "criterion_id": "#1-AC2",
+          "requirement": "Legacy sessions.json migrates automatically after backup.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-001"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-007"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#1-AC3",
+          "requirement": "Telemetry is opt-in, local-only and contains no sensitive content.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-001"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-010"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Provide filesystem/network-absence runtime evidence"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-CI-45720937897",
+        "EV-ISSUE-001",
+        "EV-SRC-001",
+        "EV-TEST-006",
+        "EV-TEST-007",
+        "EV-TEST-008",
+        "EV-TEST-010"
+      ],
+      "dependencies": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Slice 3 — Testing and reliability infrastructure",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/2",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:21Z",
+      "body_sha256": "4d04b3fb6f4c591c98160e0cd620043752fa2767a831c836820dcbc5bdfaee54",
+      "parent_issue": null,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#2-AC1",
+          "requirement": "All deterministic tests run locally and in CI.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-002",
+            "EV-SCRIPT-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720937897",
+            "EV-CI-45720937961",
+            "EV-CI-45720937755"
+          ],
+          "remaining_work": [
+            "Implement missing golden/E2E/visual/load/IPC suites",
+            "Remove --passWithNoTests masking",
+            "Execute verify:all on exact candidate SHA",
+            "Obtain green CI"
+          ]
+        },
+        {
+          "criterion_id": "#2-AC2",
+          "requirement": "Live provider evaluations remain separate via npm run eval:live.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SCRIPT-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Populate tests/eval/live or replace empty script; execute once with explicit live-provider authorization"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-CI-45720937755",
+        "EV-CI-45720937897",
+        "EV-CI-45720937961",
+        "EV-ISSUE-002",
+        "EV-SCRIPT-001",
+        "EV-SRC-002"
+      ],
+      "dependencies": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Slice 4 — Professional HTML, PDF and editable PPTX export",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/3",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:23Z",
+      "body_sha256": "0885f3ef46204d8ebe86aae08012c48ef2a4d95ff20110d200661a696276dd22",
+      "parent_issue": null,
+      "classification": "NOT_STARTED",
+      "criteria": [
+        {
+          "criterion_id": "#3-AC1",
+          "requirement": "HTML remains canonical output.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-003"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Execute HTML export acceptance test",
+            "Verify exported file bytes and artifact version"
+          ]
+        },
+        {
+          "criterion_id": "#3-AC2",
+          "requirement": "PPTX is generated from structured slides, never generated HTML.",
+          "status": "FAIL",
+          "implementation_evidence_ids": [
+            "EV-SRC-003"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Implement pptxgenjs export from structured Slide[]",
+            "Add structured-data assertions"
+          ]
+        },
+        {
+          "criterion_id": "#3-AC3",
+          "requirement": "All three formats open correctly.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-003"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Implement PDF and PPTX export",
+            "Run and inspect all three exported artifacts"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-003",
+        "EV-SRC-003"
+      ],
+      "dependencies": [
+        6,
+        12,
+        15
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Slice 5 — Ultimate macOS desktop experience",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/4",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:24Z",
+      "body_sha256": "ce0cddd0790f7781ee7f3999d57f9d986a693934a50cb6344d68cf4e2cb9fbcf",
+      "parent_issue": null,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#4-AC1",
+          "requirement": "Full desktop experience is usable without developer tooling.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-004"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720937961"
+          ],
+          "remaining_work": [
+            "Implement version history/export menu/status bar and accessibility polish",
+            "Run E2E on packaged app"
+          ]
+        },
+        {
+          "criterion_id": "#4-AC2",
+          "requirement": "Unsigned DMG and ZIP builds succeed.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-004",
+            "EV-WORKFLOW-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720949997"
+          ],
+          "remaining_work": [
+            "Resolve release output path mismatch",
+            "Execute package:mac and inspect DMG/ZIP"
+          ]
+        },
+        {
+          "criterion_id": "#4-AC3",
+          "requirement": "Documentation and release checklist are updated.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-FILES-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Update README and check off verified release checklist items"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-CI-45720937961",
+        "EV-CI-45720949997",
+        "EV-FILES-001",
+        "EV-ISSUE-004",
+        "EV-SRC-004",
+        "EV-WORKFLOW-001"
+      ],
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Release quality improvements and runbooks",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/5",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:26Z",
+      "body_sha256": "5e4665a1b31f091c169dc1c40dcb246ba3df1d5e54462d8f4d6f1aa62607ff04",
+      "parent_issue": null,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#5-AC1",
+          "requirement": "Acceptance criteria affected by these improvements are met.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-005"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Implement overflow/blank-page checks, fonts, ingestion, citation grounding and failed-generation runbook",
+            "Update user documentation"
+          ]
+        },
+        {
+          "criterion_id": "#5-AC2",
+          "requirement": "Horizontal scaling and cloud workers remain explicitly deferred.",
+          "status": "PASS",
+          "implementation_evidence_ids": [
+            "EV-DOC-005"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": []
+        }
+      ],
+      "evidence_ids": [
+        "EV-DOC-005",
+        "EV-ISSUE-005",
+        "EV-SRC-005"
+      ],
+      "dependencies": [
+        2,
+        4
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 6,
+      "title": "SQLite schema and migrations",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/6",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:52Z",
+      "body_sha256": "648593982263858fef3b95a6a9f100245a4278afb8632bf46bd50e7aa9766130",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#6-AC1",
+          "requirement": "Schema initializes on fresh userData.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-006"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-006"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#6-AC2",
+          "requirement": "Migrations are idempotent.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-006"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-006"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#6-AC3",
+          "requirement": "Existing data is never dropped.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-006"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-006"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-006",
+        "EV-SRC-006",
+        "EV-TEST-006"
+      ],
+      "dependencies": [],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Legacy sessions.json migration with backup",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/7",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:56Z",
+      "body_sha256": "9ffaf55f6487f05fadf0ba84b8f1241c40956e682c73620de4999abc4b997d82",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#7-AC1",
+          "requirement": "Legacy sessions remain readable.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-007"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-007"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#7-AC2",
+          "requirement": "Backup exists before import.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-007"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-007"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#7-AC3",
+          "requirement": "Failed import leaves source intact.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-007"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-007"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-007",
+        "EV-SRC-007",
+        "EV-TEST-007"
+      ],
+      "dependencies": [
+        6
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Transactional session persistence and stale-result protection",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/8",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:20:59Z",
+      "body_sha256": "a4bef5c7debceb5e4896166dc30cbc3f4964cf9575169f4c00c7865491e34d03",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#8-AC1",
+          "requirement": "Interrupted writes do not corrupt sessions.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-008"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-008"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#8-AC2",
+          "requirement": "Stale results are discarded.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-008"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-008"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-008",
+        "EV-SRC-008",
+        "EV-TEST-008"
+      ],
+      "dependencies": [
+        6,
+        7
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Artifact versioning, SHA-256 checksums and atomic writes",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/9",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:03Z",
+      "body_sha256": "0ed37f12550aa144a8928ff106473ae5465aab0da553d1e23dd21d1d1ed6c5e7",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#9-AC1",
+          "requirement": "Checksum matches file bytes.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-009"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-009"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#9-AC2",
+          "requirement": "Atomic writes leave no partial artifacts.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-009"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-009"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-009",
+        "EV-SRC-009",
+        "EV-TEST-009"
+      ],
+      "dependencies": [
+        6
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 10,
+      "title": "Opt-in JSONL telemetry with viewer and clear controls",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/10",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:06Z",
+      "body_sha256": "a4669c86624b2ba6a20c7d56ee4ffd0e4b92d4b03d11c882c1a2d5517afa420a",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#10-AC1",
+          "requirement": "Disabled by default.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-010"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-010"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#10-AC2",
+          "requirement": "Viewer shows sanitized events.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-010"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-010"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        },
+        {
+          "criterion_id": "#10-AC3",
+          "requirement": "Clear removes local JSONL.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-010"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-010"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-010",
+        "EV-SRC-010",
+        "EV-TEST-010"
+      ],
+      "dependencies": [
+        6
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 11,
+      "title": "Correlation IDs and stage timings",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/11",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:09Z",
+      "body_sha256": "e4e97e038e2edf848d4ceaf7236fe2095e069590504c19fb8eba2c8e451486fb",
+      "parent_issue": 1,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#11-AC1",
+          "requirement": "Every stage has timing and correlation ID.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-011"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-011"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Implement and test gateway correlationId propagation"
+          ]
+        },
+        {
+          "criterion_id": "#11-AC2",
+          "requirement": "No credential material in logs.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-010",
+            "EV-SRC-011"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-011",
+            "EV-TEST-010"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-011",
+        "EV-SRC-010",
+        "EV-SRC-011",
+        "EV-TEST-010",
+        "EV-TEST-011"
+      ],
+      "dependencies": [
+        10
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 12,
+      "title": "Split verification scripts and CI gates",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/12",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:12Z",
+      "body_sha256": "34887a4fe1daaf47b835a1c6621b31945e3f1c53d269c0ea186dec4d43352d43",
+      "parent_issue": 2,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#12-AC1",
+          "requirement": "All commands exist and exit correctly.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SCRIPT-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Execute each command and record exit code",
+            "Remove --passWithNoTests or populate empty suites"
+          ]
+        },
+        {
+          "criterion_id": "#12-AC2",
+          "requirement": "CI invokes each command.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SCRIPT-001",
+            "EV-WORKFLOW-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720937897"
+          ],
+          "remaining_work": [
+            "Add CI jobs for verify/verify:all and ensure non-hollow suites",
+            "Obtain green run on candidate SHA"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-CI-45720937897",
+        "EV-ISSUE-012",
+        "EV-SCRIPT-001",
+        "EV-SRC-012",
+        "EV-WORKFLOW-001"
+      ],
+      "dependencies": [],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 13,
+      "title": "Golden prompt suite with quality gates",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/13",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:15Z",
+      "body_sha256": "a6c8915f6181f34adf3d3f8bf54c2850a2e84a781bbf0621a3f9250093546ff0",
+      "parent_issue": 2,
+      "classification": "NOT_STARTED",
+      "criteria": [
+        {
+          "criterion_id": "#13-AC1",
+          "requirement": "Quality thresholds are explicit and enforced.",
+          "status": "FAIL",
+          "implementation_evidence_ids": [
+            "EV-SRC-013"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Create golden prompts, fixtures, thresholds and deterministic test"
+          ]
+        },
+        {
+          "criterion_id": "#13-AC2",
+          "requirement": "Live evaluations remain separate.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SCRIPT-001"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Populate tests/eval/live and document separation"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-013",
+        "EV-SCRIPT-001",
+        "EV-SRC-013"
+      ],
+      "dependencies": [],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 14,
+      "title": "Playwright Electron acceptance tests",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/14",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:19Z",
+      "body_sha256": "388bd3adaf480bc5a4f126cd33b469ded61b2ac5ee6f739a399d1ad3f0686958",
+      "parent_issue": 2,
+      "classification": "NOT_STARTED",
+      "criteria": [
+        {
+          "criterion_id": "#14-AC1",
+          "requirement": "E2E runs on macOS CI.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-014"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [
+            "EV-CI-45720937961"
+          ],
+          "remaining_work": [
+            "Add Playwright config/specs and obtain successful macOS run"
+          ]
+        },
+        {
+          "criterion_id": "#14-AC2",
+          "requirement": "Failure screenshots are uploaded.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-014"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Configure failure screenshot upload and verify artifact"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-CI-45720937961",
+        "EV-ISSUE-014",
+        "EV-SRC-014"
+      ],
+      "dependencies": [
+        12,
+        17
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 15,
+      "title": "Visual regression baselines and PDF screenshots",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/15",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:22Z",
+      "body_sha256": "81248d261145aacf1a59bcc7856f8a1a2668fc15c0ae20dd7a87f3bbc35bfd8e",
+      "parent_issue": 2,
+      "classification": "NOT_STARTED",
+      "criteria": [
+        {
+          "criterion_id": "#15-AC1",
+          "requirement": "Baselines never auto-overwrite.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-015"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Create approved baselines and verify mode"
+          ]
+        },
+        {
+          "criterion_id": "#15-AC2",
+          "requirement": "Diffs are uploaded on failure.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-015"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Configure and exercise diff upload"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-015",
+        "EV-SRC-015"
+      ],
+      "dependencies": [],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 16,
+      "title": "30-slide load, memory and throughput tests",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/16",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:26Z",
+      "body_sha256": "9ce22884f436dc1b1312024faa00ff835391ed42bf90136241823d8cf4bda34a",
+      "parent_issue": 2,
+      "classification": "NOT_STARTED",
+      "criteria": [
+        {
+          "criterion_id": "#16-AC1",
+          "requirement": "30-slide deck completes.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-016"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Create 30-slide fixture and execute load test"
+          ]
+        },
+        {
+          "criterion_id": "#16-AC2",
+          "requirement": "No runaway memory growth.",
+          "status": "NOT_RUN",
+          "implementation_evidence_ids": [
+            "EV-SRC-016"
+          ],
+          "test_evidence_ids": [],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Add memory sampler and measured budget assertion"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-016",
+        "EV-SRC-016"
+      ],
+      "dependencies": [
+        6
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 17,
+      "title": "Cancellation and concurrent-generation race tests",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/17",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:29Z",
+      "body_sha256": "4b169bcfd28f2c2baabfab90c21d12cda121da06470d101ebc817be8e44d3abf",
+      "parent_issue": 2,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#17-AC1",
+          "requirement": "No stale completion events.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-017"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-017"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Add event-stream assertion and suppress stale stage/completion events"
+          ]
+        },
+        {
+          "criterion_id": "#17-AC2",
+          "requirement": "Final session state is from latest operation.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-008",
+            "EV-SRC-017"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-017"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-017",
+        "EV-SRC-008",
+        "EV-SRC-017",
+        "EV-TEST-017"
+      ],
+      "dependencies": [
+        8
+      ],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    },
+    {
+      "number": 18,
+      "title": "IPC security and credential-exposure tests",
+      "url": "https://github.com/sham435/ai_presentation_maker0001/issues/18",
+      "state": "open",
+      "state_reason": null,
+      "updated_at": "2026-11-25T23:21:33Z",
+      "body_sha256": "0e3805cb376a71cfff06edda319e2cc938816668d97a4d64d828f1557fc29697",
+      "parent_issue": 2,
+      "classification": "PARTIAL",
+      "criteria": [
+        {
+          "criterion_id": "#18-AC1",
+          "requirement": "Malformed IPC payloads are rejected.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-018"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-018"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Add dedicated tests/integration/ipcSecurity.test.ts"
+          ]
+        },
+        {
+          "criterion_id": "#18-AC2",
+          "requirement": "No key or ciphertext in renderer payloads.",
+          "status": "PARTIAL",
+          "implementation_evidence_ids": [
+            "EV-SRC-018"
+          ],
+          "test_evidence_ids": [
+            "EV-TEST-018"
+          ],
+          "ci_evidence_ids": [],
+          "runtime_evidence_ids": [],
+          "remaining_work": [
+            "Commit the uncommitted implementation to the authorized branch after explicit authorization",
+            "Execute the relevant verification command and record exact exit code/test counts",
+            "Obtain CI evidence on the exact candidate commit",
+            "Add dedicated renderer-bound payload assertions"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "EV-ISSUE-018",
+        "EV-SRC-018",
+        "EV-TEST-018"
+      ],
+      "dependencies": [],
+      "closure_eligible": false,
+      "closure_reason": "Not eligible: acceptance criteria lack executed tests, CI on exact candidate SHA, runtime evidence, or required implementation.",
+      "audited_at": "2026-11-25T23:50:28Z",
+      "audit_notes": [
+        "Evidence retrieved live during Checkpoint 0.",
+        "Application commands were not executed in this checkpoint."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "EV-ENV-001",
+      "evidence_type": "COMMAND",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "INFORMATIONAL",
+      "supports_completion": false,
+      "details": "Audit environment captured live: Node v24.15.0, npm 11.12.1, Darwin 25.6.0 arm64; audit start 2026-11-25T23:46:21Z.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-GIT-001",
+      "evidence_type": "COMMAND",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "INFORMATIONAL",
+      "supports_completion": false,
+      "details": "Live git state: local branch feat/slice-2-sqlite-persistence; local HEAD 2441dc148a0ca0240b1b66abd2204321d688ac51; local main 579ecfdc203f872c99b4099aa5b3a00211a0a386; origin/main 678d89bfe06d2d26525076f7dc70c5c1006e4e6b; origin/feat/slice-2-sqlite-persistence 350cf102553e9f9c4e32783715a52d7bf81a5370; origin/feat/ultimate-macos-desktop-v1 2441dc148a0ca0240b1b66abd2204321d688ac51; authorized branch differs from checked-out branch. Feature branch is 8 ahead / 0 behind origin/main; checked-out slice branch is 7 ahead / 0 behind its origin.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-REPO-001",
+      "evidence_type": "COMMAND",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "INFORMATIONAL",
+      "supports_completion": false,
+      "details": "Live GitHub repository metadata: public, default branch main, full name sham435/ai_presentation_maker0001.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-001",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/1",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #1 fetched: state=open; title='Slice 2 — SQLite persistence and observability'; updated_at=2026-11-25T23:20:19Z; exact-body SHA-256=459c10c82ef4a5a4f9424c098e420244858e62973ac514ef56191443b82dcd9f; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-002",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/2",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #2 fetched: state=open; title='Slice 3 — Testing and reliability infrastructure'; updated_at=2026-11-25T23:20:21Z; exact-body SHA-256=4d04b3fb6f4c591c98160e0cd620043752fa2767a831c836820dcbc5bdfaee54; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-003",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/3",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #3 fetched: state=open; title='Slice 4 — Professional HTML, PDF and editable PPTX export'; updated_at=2026-11-25T23:20:23Z; exact-body SHA-256=0885f3ef46204d8ebe86aae08012c48ef2a4d95ff20110d200661a696276dd22; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-004",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/4",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #4 fetched: state=open; title='Slice 5 — Ultimate macOS desktop experience'; updated_at=2026-11-25T23:20:24Z; exact-body SHA-256=ce0cddd0790f7781ee7f3999d57f9d986a693934a50cb6344d68cf4e2cb9fbcf; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-005",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/5",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #5 fetched: state=open; title='Release quality improvements and runbooks'; updated_at=2026-11-25T23:20:26Z; exact-body SHA-256=5e4665a1b31f091c169dc1c40dcb246ba3df1d5e54462d8f4d6f1aa62607ff04; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-006",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/6",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #6 fetched: state=open; title='SQLite schema and migrations'; updated_at=2026-11-25T23:20:52Z; exact-body SHA-256=648593982263858fef3b95a6a9f100245a4278afb8632bf46bd50e7aa9766130; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-007",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/7",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #7 fetched: state=open; title='Legacy sessions.json migration with backup'; updated_at=2026-11-25T23:20:56Z; exact-body SHA-256=9ffaf55f6487f05fadf0ba84b8f1241c40956e682c73620de4999abc4b997d82; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-008",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/8",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #8 fetched: state=open; title='Transactional session persistence and stale-result protection'; updated_at=2026-11-25T23:20:59Z; exact-body SHA-256=a4bef5c7debceb5e4896166dc30cbc3f4964cf9575169f4c00c7865491e34d03; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-009",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/9",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #9 fetched: state=open; title='Artifact versioning, SHA-256 checksums and atomic writes'; updated_at=2026-11-25T23:21:03Z; exact-body SHA-256=0ed37f12550aa144a8928ff106473ae5465aab0da553d1e23dd21d1d1ed6c5e7; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-010",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/10",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #10 fetched: state=open; title='Opt-in JSONL telemetry with viewer and clear controls'; updated_at=2026-11-25T23:21:06Z; exact-body SHA-256=a4669c86624b2ba6a20c7d56ee4ffd0e4b92d4b03d11c882c1a2d5517afa420a; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-011",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/11",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #11 fetched: state=open; title='Correlation IDs and stage timings'; updated_at=2026-11-25T23:21:09Z; exact-body SHA-256=e4e97e038e2edf848d4ceaf7236fe2095e069590504c19fb8eba2c8e451486fb; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-012",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/12",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #12 fetched: state=open; title='Split verification scripts and CI gates'; updated_at=2026-11-25T23:21:12Z; exact-body SHA-256=34887a4fe1daaf47b835a1c6621b31945e3f1c53d269c0ea186dec4d43352d43; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-013",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/13",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #13 fetched: state=open; title='Golden prompt suite with quality gates'; updated_at=2026-11-25T23:21:15Z; exact-body SHA-256=a6c8915f6181f34adf3d3f8bf54c2850a2e84a781bbf0621a3f9250093546ff0; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-014",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/14",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #14 fetched: state=open; title='Playwright Electron acceptance tests'; updated_at=2026-11-25T23:21:19Z; exact-body SHA-256=388bd3adaf480bc5a4f126cd33b469ded61b2ac5ee6f739a399d1ad3f0686958; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-015",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/15",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #15 fetched: state=open; title='Visual regression baselines and PDF screenshots'; updated_at=2026-11-25T23:21:22Z; exact-body SHA-256=81248d261145aacf1a59bcc7856f8a1a2668fc15c0ae20dd7a87f3bbc35bfd8e; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-016",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/16",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #16 fetched: state=open; title='30-slide load, memory and throughput tests'; updated_at=2026-11-25T23:21:26Z; exact-body SHA-256=9ce22884f436dc1b1312024faa00ff835391ed42bf90136241823d8cf4bda34a; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-017",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/17",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #17 fetched: state=open; title='Cancellation and concurrent-generation race tests'; updated_at=2026-11-25T23:21:29Z; exact-body SHA-256=4b169bcfd28f2c2baabfab90c21d12cda121da06470d101ebc817be8e44d3abf; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-ISSUE-018",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/issues/18",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "Live issue #18 fetched: state=open; title='IPC security and credential-exposure tests'; updated_at=2026-11-25T23:21:33Z; exact-body SHA-256=0e3805cb376a71cfff06edda319e2cc938816668d97a4d64d828f1557fc29697; no comments; acceptance criteria remain unchecked.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-FILES-001",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": true,
+      "details": "Live filesystem read verified .github/ISSUE_TEMPLATE/{bug_report.yml,feature_request.yml,agent-session.yml}, .github/PULL_REQUEST_TEMPLATE.md, .github/CODEOWNERS, .github/dependabot.yml, docs/BRANCH_PROTECTION.md, docs/RELEASE_CHECKLIST.md and docs/implementation-plan.md.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SCRIPT-001",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/package.json",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "package.json",
+        "symbol": "scripts",
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "Live package.json lines 9-25 define required scripts; vitest.config.ts line 11 includes tests/**/*.test.ts. test:integration, test:e2e, test:visual and eval:live use --passWithNoTests, so empty suites can exit 0. No command executed during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-WORKFLOW-001",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/.github/workflows",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": ".github/workflows/release-macos.yml",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "Live workflow files exist. release-macos.yml lines 13-14 set contents: read while lines 69-76 call softprops/action-gh-release@v2; electron-builder.yml line 5 outputs to release while release workflow lines 65-76 upload dist/*.dmg and dist/*.zip. Packaged-app verifier is conditionally skipped at lines 44-50.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-CI-45720937897",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937897",
+        "branch": null,
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45720937897,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "verify job success; dependency-audit failed at npm audit",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "CI Verification",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937897",
+        "run_id": 45720937897,
+        "tested_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "event": "push",
+        "job_name": "CI Verification",
+        "conclusion": "failure"
+      }
+    },
+    {
+      "evidence_id": "EV-CI-45720937853",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937853",
+        "branch": null,
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45720937853,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "security job failed at Dependency audit; CodeQL/IPC/scanning skipped",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "Security",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937853",
+        "run_id": 45720937853,
+        "tested_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "event": "push",
+        "job_name": "Security",
+        "conclusion": "failure"
+      }
+    },
+    {
+      "evidence_id": "EV-CI-45720949997",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720949997",
+        "branch": null,
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45720949997,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "build-macos cancelled; zero steps ran",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "macOS Build and Release",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720949997",
+        "run_id": 45720949997,
+        "tested_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "event": "push",
+        "job_name": "macOS Build and Release",
+        "conclusion": "cancelled"
+      }
+    },
+    {
+      "evidence_id": "EV-CI-45720937961",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937961",
+        "branch": null,
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45720937961,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "e2e cancelled; zero steps ran",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "Electron E2E",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937961",
+        "run_id": 45720937961,
+        "tested_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "event": "push",
+        "job_name": "Electron E2E",
+        "conclusion": "cancelled"
+      }
+    },
+    {
+      "evidence_id": "EV-CI-45720937755",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937755",
+        "branch": null,
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45720937755,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "visual cancelled; zero steps ran",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "Visual Regression",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45720937755",
+        "run_id": 45720937755,
+        "tested_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "event": "push",
+        "job_name": "Visual Regression",
+        "conclusion": "cancelled"
+      }
+    },
+    {
+      "evidence_id": "EV-CI-45667974805",
+      "evidence_type": "CI_RUN",
+      "evidence_level": "E4",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45667974805",
+        "branch": null,
+        "commit_sha": "678d89bfe06d2d26525076f7dc70c5c1006e4e6b",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": 45667974805,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "STALE",
+      "result": "PASS",
+      "supports_completion": false,
+      "details": "main-branch npm test workflow passed; different commit, not candidate evidence",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": {
+        "workflow_name": "CI",
+        "workflow_url": "https://github.com/sham435/ai_presentation_maker0001/actions/runs/45667974805",
+        "run_id": 45667974805,
+        "tested_sha": "678d89bfe06d2d26525076f7dc70c5c1006e4e6b",
+        "event": "push",
+        "job_name": "CI",
+        "conclusion": "success"
+      }
+    },
+    {
+      "evidence_id": "EV-PERM-001",
+      "evidence_type": "PERMISSION",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "Live gh auth scopes for active account sham435/GITHUB_TOKEN: admin:gpg_key, admin:ssh_signing_key, repo, workflow, write:packages. Missing read:project and read:org.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-PROJECT-001",
+      "evidence_type": "PROJECT",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "One read-only GitHub Projects GraphQL query returned INSUFFICIENT_SCOPES requiring read:project; not retried. No project board, fields, views or item associations could be verified.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-BRANCHPROT-001",
+      "evidence_type": "COMMAND",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "Live GET /branches/main/protection returned 404 \"Branch not protected\"; rulesets list empty; all branches protected:false. docs/BRANCH_PROTECTION.md is documentation only.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-RELEASE-001",
+      "evidence_type": "RELEASE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "BLOCKED",
+      "supports_completion": false,
+      "details": "Live GitHub read checks found no tags, no releases or draft releases, no release assets, no workflow artifacts, and zero published packages for the repository/user.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-DEFECT-001",
+      "evidence_type": "ISSUE",
+      "evidence_level": "E0",
+      "source": {
+        "uri": "https://github.com/sham435/ai_presentation_maker0001",
+        "branch": null,
+        "commit_sha": null,
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "INFORMATIONAL",
+      "supports_completion": false,
+      "details": "Live issue bodies for #6-#18 all contain literal \"Parent epic: #undefined\"; GitHub sub-issue API links are correct (#6-#11 -> #1; #12-#18 -> #2). Issue #12 has status:in-progress label while native planning status is Backlog.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-001",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/.",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "uncommitted Slice 2 modules: src/main/store/{db,migrations,migrateJson,sessionStore,artifactStore}.ts, src/main/telemetry/{jsonl,logger}.ts, src/renderer/src/components/TelemetryViewer.tsx; startup wiring in src/main/index.ts Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-002",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/.",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": null,
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "scripts and workflows exist; root unit tests and uncommitted integration tests exist; golden/e2e/visual/load suites absent; --passWithNoTests masks empty suites",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-003",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/agent/renderer.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/agent/renderer.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "HTML renderer and artifact save/open flow exist; no PDF module, no PPTX module, no pptxgenjs dependency, no export channels",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-004",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/renderer/src/App.tsx",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/renderer/src/App.tsx",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "Offline badge, session browser, template gallery, settings/telemetry UI exist; version history, export menu, status bar, accessibility polish and packaging evidence missing",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-005",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/docs/superpowers/specs/2026-11-26-ultimate-macos-desktop-design.md",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "docs/superpowers/specs/2026-11-26-ultimate-macos-desktop-design.md",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "Some role/theme/citation/language features exist; overflow, blank-page, Tamil/Sinhala fonts, ingestion, runbook and updated user docs missing; cloud/horizontal workers explicitly deferred",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-006",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/store/migrations.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/store/migrations.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "migrate() transaction, append-only DDL, version table, indexes and integrityCheck exist only in uncommitted working tree Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-007",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/store/migrateJson.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/store/migrateJson.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "timestamped backup, tolerant normalization, transactional import and source rename exist only in uncommitted working tree Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-008",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/store/sessionStore.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/store/sessionStore.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "expectedRevision/operationId guards and transactional aggregate save exist only in uncommitted working tree Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-009",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/store/artifactStore.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/store/artifactStore.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "SHA-256 checksum, chmod 0600 temp write, atomic rename, verifyArtifact and version listing exist only in uncommitted working tree Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-010",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/telemetry/jsonl.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/telemetry/jsonl.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "default-off opt-in, strict metadata allowlist, redaction, 0600 JSONL append, read/clear and IPC/viewer wiring exist only in uncommitted working tree Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-011",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/agent/orchestrator.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/agent/orchestrator.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "timed() emits stage events and stores rows, but ModelRequest.correlationId is declared in modelGateway.ts and never consumed; no gateway propagation test Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-012",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/package.json",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "package.json",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "all command names exist but four use --passWithNoTests; CI runs typecheck/lint/unit/integration/build/smoke and script-name checks, not verify/verify:all",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-013",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/golden/",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/golden/",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "directory absent; no prompts.ts, index.test.ts, fixtures, thresholds or scorer",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-014",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/playwright.config.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "playwright.config.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "config absent; tests/e2e absent; @playwright/test not declared; workflow exists but latest run cancelled",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-015",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/visual/",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/visual/",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "directory absent; baseline images and scripts/capture-pdf-baselines.mjs absent; workflow exists but latest run cancelled",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-016",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/load/largeDeck.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/load/largeDeck.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "FAIL",
+      "supports_completion": false,
+      "details": "file absent; no 30-slide fixture, duration sampler or memory sampler",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-017",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/cancellation.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/cancellation.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "AbortSignal/supersession/rollback tests exist uncommitted; orchestrator emits stage events even when superseded and App.tsx filters correlation only for retry/cancelled events Evidence is from the dirty working tree, not a committed candidate.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-SRC-018",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/src/main/ipc.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "src/main/ipc.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PARTIAL",
+      "supports_completion": false,
+      "details": "Zod request schemas, validated() response guard, isSafeArtifactPath and credential accessors exist at HEAD; no dedicated ipcSecurity.test.ts; several handlers lack response schemas",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-006",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/sqlite.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/sqlite.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: initializes a fresh database with all required tables and columns; applies migrations only once on repeated startup; rolls back session, slide and artifact writes together when interrupted; rejects stale writes without corrupting the current session. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/sqlite.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-007",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/migration.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/migration.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: backs up, imports and renames legacy sessions without dropping data; is a no-op when no legacy file remains; leaves the source intact and rolls back everything after an interrupted import. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/migration.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-008",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/cancellation.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/cancellation.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: does not persist error state for a cancelled operation; discards a superseded result while keeping the newer edit; keeps the previous session intact when an interrupted write rolls back. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/cancellation.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-009",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/artifacts.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/artifacts.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: writes atomically and records a SHA-256 checksum of the final bytes; detects tampering and never rewrites an existing version; leaves no partial artifact when a write is interrupted before rename. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/artifacts.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-010",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/telemetry.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/telemetry.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: writes nothing while opt-out is active; redacts prompts, keys and user content when opted in; ignores malformed lines and clears local JSONL on request; persists the opt-in flag and exposes it to the renderer viewer safely. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/telemetry.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-011",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/timings.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/timings.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: emits complete, sensitive-free timing events for every generation stage. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/timings.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-018",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/credentials.test.ts; tests/schema.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/credentials.test.ts; tests/schema.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: never exposes the key or ciphertext in public settings; blocks key storage when OS encryption is unavailable; never exposes environment keys through public settings; clears the stored key without dropped settings; strips userinfo from endpoints before they reach the renderer; rejects any credential material in responses; rejects public plaintext endpoints and credentials embedded in URLs; accepts a known templateId and rejects unknown ids. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:unit",
+        "test_name": null,
+        "test_file": "tests/credentials.test.ts; tests/schema.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-TEST-017",
+      "evidence_type": "TEST",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/tests/integration/cancellation.test.ts",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "tests/integration/cancellation.test.ts",
+        "symbol": null,
+        "line_start": null,
+        "line_end": null,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "NOT_RUN",
+      "supports_completion": false,
+      "details": "Test source inspected with meaningful assertions; exact tests: does not persist error state for a cancelled operation; discards a superseded result while keeping the newer edit; keeps the previous session intact when an interrupted write rolls back. NOT EXECUTED during Checkpoint 0.",
+      "sanitized_excerpt": null,
+      "test_execution": {
+        "command": "npm run test:integration",
+        "test_name": null,
+        "test_file": "tests/integration/cancellation.test.ts",
+        "exit_code": null,
+        "passed": null,
+        "failed": null,
+        "skipped": null,
+        "started_at": null,
+        "finished_at": null,
+        "environment": null
+      },
+      "ci_execution": null
+    },
+    {
+      "evidence_id": "EV-DOC-005",
+      "evidence_type": "SOURCE",
+      "evidence_level": "E1",
+      "source": {
+        "uri": "file:///Users/sham4/ai_presentation_maker/docs/superpowers/specs/2026-11-26-ultimate-macos-desktop-design.md",
+        "branch": "feat/slice-2-sqlite-persistence",
+        "commit_sha": "2441dc148a0ca0240b1b66abd2204321d688ac51",
+        "file_path": "docs/superpowers/specs/2026-11-26-ultimate-macos-desktop-design.md",
+        "symbol": null,
+        "line_start": 6,
+        "line_end": 12,
+        "blob_sha": null,
+        "run_id": null,
+        "artifact_uri": null,
+        "artifact_sha256": null
+      },
+      "retrieved_at": "2026-11-25T23:50:28Z",
+      "freshness": "LIVE",
+      "result": "PASS",
+      "supports_completion": true,
+      "details": "Design document lines 6, 12 and 67 explicitly defer P2/server/cloud work, horizontal workers and template marketplace; supports the \"explicitly deferred\" criterion only.",
+      "sanitized_excerpt": null,
+      "test_execution": null,
+      "ci_execution": null
+    }
+  ],
+  "resources": [
+    {
+      "resource_type": "MILESTONE",
+      "name": "M1",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/milestone/1",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live GitHub UI API returned milestone; opened issue counts verified."
+    },
+    {
+      "resource_type": "MILESTONE",
+      "name": "M2",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/milestone/2",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live GitHub UI API returned milestone; opened issue counts verified."
+    },
+    {
+      "resource_type": "MILESTONE",
+      "name": "M3",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/milestone/3",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live GitHub UI API returned milestone; opened issue counts verified."
+    },
+    {
+      "resource_type": "MILESTONE",
+      "name": "M4",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/milestone/4",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live GitHub UI API returned milestone; opened issue counts verified."
+    },
+    {
+      "resource_type": "MILESTONE",
+      "name": "M5",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/milestone/5",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live GitHub UI API returned milestone; opened issue counts verified."
+    },
+    {
+      "resource_type": "LABEL",
+      "name": "standardized labels (49)",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/labels",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "Live label set returned by GitHub UI API."
+    },
+    {
+      "resource_type": "PULL_REQUEST",
+      "name": "Issues #1-#18",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/issues",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-ISSUE-001",
+        "EV-ISSUE-018"
+      ],
+      "notes": "All 18 issues fetched live; states, bodies, labels and milestones verified."
+    },
+    {
+      "resource_type": "ISSUE_TEMPLATE",
+      "name": "Bug report template",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/ISSUE_TEMPLATE/bug_report.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/ISSUE_TEMPLATE/bug_report.yml."
+    },
+    {
+      "resource_type": "ISSUE_TEMPLATE",
+      "name": "Feature request template",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/ISSUE_TEMPLATE/feature_request.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/ISSUE_TEMPLATE/feature_request.yml."
+    },
+    {
+      "resource_type": "ISSUE_TEMPLATE",
+      "name": "Agent session template",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/ISSUE_TEMPLATE/agent-session.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/ISSUE_TEMPLATE/agent-session.yml."
+    },
+    {
+      "resource_type": "PULL_REQUEST_TEMPLATE",
+      "name": "Pull request template",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/PULL_REQUEST_TEMPLATE.md",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/PULL_REQUEST_TEMPLATE.md."
+    },
+    {
+      "resource_type": "CODEOWNERS",
+      "name": "CODEOWNERS",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/CODEOWNERS",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/CODEOWNERS."
+    },
+    {
+      "resource_type": "DEPENDABOT",
+      "name": "Dependabot configuration",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/.github/dependabot.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified .github/dependabot.yml."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "Branch protection documentation",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/docs/BRANCH_PROTECTION.md",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "Live read verified docs/BRANCH_PROTECTION.md."
+    },
+    {
+      "resource_type": "RELEASE",
+      "name": "Release checklist",
+      "status": "CREATED BUT NOT YET VERIFIED",
+      "exists": true,
+      "resource_url": "file:///Users/sham4/ai_presentation_maker/docs/RELEASE_CHECKLIST.md",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-FILES-001"
+      ],
+      "notes": "File exists but all items are unchecked and no verification evidence is recorded."
+    },
+    {
+      "resource_type": "PROJECT",
+      "name": "AI Presentation Maker — Desktop v1",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": null,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-PROJECT-001",
+        "EV-PERM-001"
+      ],
+      "notes": "GraphQL returned INSUFFICIENT_SCOPES; project existence could not be verified."
+    },
+    {
+      "resource_type": "PROJECT_FIELD",
+      "name": "Status, Priority, Slice, Workstream, Release target",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-PROJECT-001",
+        "EV-ISSUE-012"
+      ],
+      "notes": "No custom issue fields returned; project access blocked."
+    },
+    {
+      "resource_type": "PROJECT_VIEW",
+      "name": "Eight requested project views",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": null,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-PROJECT-001"
+      ],
+      "notes": "Project access blocked; could not search for duplicates."
+    },
+    {
+      "resource_type": "PROJECT_ITEM",
+      "name": "Issue-to-project associations",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": null,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-PROJECT-001"
+      ],
+      "notes": "Project access blocked; associations unverified."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "ci.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/ci.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "e2e.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/e2e.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "security.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/security.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "visual-regression.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/visual-regression.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "release-macos.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/release-macos.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "WORKFLOW",
+      "name": "project-automation.yml",
+      "status": "CREATED AND VERIFIED",
+      "exists": true,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/actions/workflows/project-automation.yml",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-WORKFLOW-001"
+      ],
+      "notes": "Live workflow API/files confirm definition; recent runs are separate evidence."
+    },
+    {
+      "resource_type": "PULL_REQUEST",
+      "name": "Draft implementation PR",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-REPO-001"
+      ],
+      "notes": "No open or draft pull requests found in live GitHub query."
+    },
+    {
+      "resource_type": "BRANCH_PROTECTION",
+      "name": "main branch protection",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": "https://github.com/sham435/ai_presentation_maker0001/branches/main/protection",
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-BRANCHPROT-001",
+        "EV-FILES-001"
+      ],
+      "notes": "GET returned 404; rulesets empty; documentation only."
+    },
+    {
+      "resource_type": "TAG",
+      "name": "v* release tags",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-RELEASE-001"
+      ],
+      "notes": "Live GitHub query found none."
+    },
+    {
+      "resource_type": "RELEASE",
+      "name": "GitHub Release / draft release",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-RELEASE-001"
+      ],
+      "notes": "Live GitHub query found none."
+    },
+    {
+      "resource_type": "RELEASE_ASSET",
+      "name": "DMG/ZIP release assets",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-RELEASE-001"
+      ],
+      "notes": "Live GitHub query found none."
+    },
+    {
+      "resource_type": "PACKAGE",
+      "name": "GHCR/npm/other packages",
+      "status": "BLOCKED / NOT CREATED",
+      "exists": false,
+      "resource_url": null,
+      "verified_at": "2026-11-25T23:50:28Z",
+      "evidence_ids": [
+        "EV-RELEASE-001"
+      ],
+      "notes": "Live GitHub query found none."
+    }
+  ],
+  "blockers": [
+    {
+      "blocker_id": "BLK-001",
+      "description": "Active GitHub token lacks read:project, so Project v2 board/fields/views/items cannot be read or verified.",
+      "affected_issues": [],
+      "status": "WAITING_FOR_AUTHORIZATION",
+      "required_action": "Provide a token with read:project (and project write scope if creation is later authorized).",
+      "evidence_ids": [
+        "EV-PERM-001",
+        "EV-PROJECT-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-002",
+      "description": "Authorized branch feat/ultimate-macos-desktop-v1 differs from the checked-out branch feat/slice-2-sqlite-persistence; uncommitted work must be preserved.",
+      "affected_issues": [
+        1,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "status": "WAITING_FOR_AUTHORIZATION",
+      "required_action": "Authorize a non-destructive path to carry the uncommitted work to the authorized branch before implementation.",
+      "evidence_ids": [
+        "EV-GIT-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-003",
+      "description": "No application verification command was executed against a candidate commit; all implementation/test evidence is source-only or stale CI.",
+      "affected_issues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "status": "OPEN",
+      "required_action": "After CONTINUE, complete the slice, execute required commands, and record exact exit codes/test counts.",
+      "evidence_ids": [
+        "EV-SCRIPT-001",
+        "EV-CI-45720937897",
+        "EV-CI-45720937961",
+        "EV-CI-45720937755"
+      ]
+    },
+    {
+      "blocker_id": "BLK-004",
+      "description": "CI Verification and Security workflows fail on npm audit --audit-level=high.",
+      "affected_issues": [
+        2,
+        5,
+        12
+      ],
+      "status": "OPEN",
+      "required_action": "Audit direct/transitive paths and upgrade incrementally without suppressing the gate.",
+      "evidence_ids": [
+        "EV-CI-45720937897",
+        "EV-CI-45720937853"
+      ]
+    },
+    {
+      "blocker_id": "BLK-005",
+      "description": "Four npm scripts use --passWithNoTests, allowing empty integration/E2E/visual/live suites to exit 0.",
+      "affected_issues": [
+        2,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "status": "OPEN",
+      "required_action": "Populate real suites and remove masking flags.",
+      "evidence_ids": [
+        "EV-SCRIPT-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-006",
+      "description": "Child issue bodies contain \"Parent epic: #undefined\" despite correct API sub-issue links; issue #12 label/status mismatch.",
+      "affected_issues": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "status": "WAITING_FOR_AUTHORIZATION",
+      "required_action": "Apply the narrowly scoped issue-body correction after Checkpoint 0 authorization.",
+      "evidence_ids": [
+        "EV-DEFECT-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-007",
+      "description": "main branch protection is not applied; only documentation exists.",
+      "affected_issues": [],
+      "status": "WAITING_FOR_AUTHORIZATION",
+      "required_action": "Apply least-privilege branch protection via an administrator.",
+      "evidence_ids": [
+        "EV-BRANCHPROT-001",
+        "EV-FILES-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-008",
+      "description": "No release tags, releases, assets, packages or successful packaging run exist; signing credentials unavailable.",
+      "affected_issues": [
+        3,
+        4,
+        5
+      ],
+      "status": "WAITING_FOR_AUTHORIZATION",
+      "required_action": "After verification, prepare unsigned DMG/ZIP and follow explicit release authorization.",
+      "evidence_ids": [
+        "EV-RELEASE-001",
+        "EV-CI-45720949997",
+        "EV-WORKFLOW-001"
+      ]
+    },
+    {
+      "blocker_id": "BLK-009",
+      "description": "All Slice 2 implementation and integration tests are uncommitted/untracked in the working tree; HEAD still contains JSON persistence.",
+      "affected_issues": [
+        1,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "status": "OPEN",
+      "required_action": "Resolve branch authorization, verify, then commit only verified changes.",
+      "evidence_ids": [
+        "EV-GIT-001",
+        "EV-SRC-001",
+        "EV-SRC-006"
+      ]
+    }
+  ]
+}

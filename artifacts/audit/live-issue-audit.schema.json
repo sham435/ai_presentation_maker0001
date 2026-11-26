@@ -1,0 +1,346 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sham435.github.io/ai_presentation_maker0001/schemas/live-issue-audit.schema.json",
+  "title": "AI Presentation Maker Live Issue Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit_id",
+    "generated_at",
+    "repository",
+    "git_state",
+    "audit_summary",
+    "issues",
+    "evidence",
+    "resources",
+    "blockers"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "audit_id": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["full_name", "url", "default_branch", "visibility", "observed_at"],
+      "properties": {
+        "full_name": { "const": "sham435/ai_presentation_maker0001" },
+        "url": { "type": "string", "format": "uri" },
+        "default_branch": { "type": "string" },
+        "visibility": { "type": "string" },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "git_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_branch",
+        "local_head_sha",
+        "working_tree",
+        "remote_feature_branch",
+        "remote_feature_sha",
+        "remote_main_sha",
+        "main_modified",
+        "observed_at"
+      ],
+      "properties": {
+        "local_branch": { "type": "string" },
+        "local_head_sha": { "$ref": "#/$defs/sha" },
+        "working_tree": { "enum": ["clean", "dirty", "unknown"] },
+        "working_tree_details": { "type": "array", "items": { "type": "string" } },
+        "remote_feature_branch": { "const": "feat/ultimate-macos-desktop-v1" },
+        "remote_feature_sha": { "$ref": "#/$defs/sha" },
+        "remote_main_sha": { "$ref": "#/$defs/sha" },
+        "feature_ahead_by": { "type": "integer", "minimum": 0 },
+        "feature_behind_by": { "type": "integer", "minimum": 0 },
+        "main_modified": { "type": "boolean" },
+        "main_modification_evidence": { "type": "string" },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "audit_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_issues_audited",
+        "complete",
+        "partial",
+        "not_started",
+        "blocked",
+        "not_audited",
+        "closure_eligible"
+      ],
+      "properties": {
+        "total_issues_audited": { "const": 18 },
+        "complete": { "type": "integer", "minimum": 0 },
+        "partial": { "type": "integer", "minimum": 0 },
+        "not_started": { "type": "integer", "minimum": 0 },
+        "blocked": { "type": "integer", "minimum": 0 },
+        "not_audited": { "type": "integer", "minimum": 0 },
+        "closure_eligible": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "minItems": 18,
+      "maxItems": 18,
+      "items": { "$ref": "#/$defs/issue" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/resource" }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["blocker_id", "description", "affected_issues", "status", "required_action"],
+        "properties": {
+          "blocker_id": { "type": "string" },
+          "description": { "type": "string" },
+          "affected_issues": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 1, "maximum": 18 }
+          },
+          "status": { "enum": ["OPEN", "RESOLVED", "WAITING_FOR_AUTHORIZATION"] },
+          "required_action": { "type": "string" },
+          "evidence_ids": { "$ref": "#/$defs/evidenceIds" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "evidenceIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "title",
+        "url",
+        "state",
+        "updated_at",
+        "body_sha256",
+        "parent_issue",
+        "classification",
+        "criteria",
+        "evidence_ids",
+        "closure_eligible",
+        "audited_at"
+      ],
+      "properties": {
+        "number": { "type": "integer", "minimum": 1, "maximum": 18 },
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "state": { "enum": ["open", "closed", "unknown"] },
+        "state_reason": { "type": ["string", "null"] },
+        "updated_at": { "type": ["string", "null"], "format": "date-time" },
+        "body_sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "parent_issue": { "type": ["integer", "null"] },
+        "classification": {
+          "enum": ["COMPLETE", "PARTIAL", "NOT_STARTED", "BLOCKED", "NOT_AUDITED"]
+        },
+        "criteria": { "type": "array", "items": { "$ref": "#/$defs/criterion" } },
+        "evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1, "maximum": 18 }
+        },
+        "closure_eligible": { "type": "boolean" },
+        "closure_reason": { "type": "string" },
+        "audited_at": { "type": "string", "format": "date-time" },
+        "audit_notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "requirement",
+        "status",
+        "implementation_evidence_ids",
+        "test_evidence_ids",
+        "ci_evidence_ids",
+        "runtime_evidence_ids",
+        "remaining_work"
+      ],
+      "properties": {
+        "criterion_id": { "type": "string" },
+        "requirement": { "type": "string" },
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "PARTIAL"] },
+        "implementation_evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "test_evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "ci_evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "runtime_evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "remaining_work": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "evidence_type",
+        "evidence_level",
+        "source",
+        "retrieved_at",
+        "freshness",
+        "result",
+        "supports_completion"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "evidence_type": {
+          "enum": [
+            "ISSUE",
+            "SOURCE",
+            "TEST",
+            "COMMAND",
+            "CI_RUN",
+            "CI_JOB",
+            "CI_LOG",
+            "PULL_REQUEST",
+            "COMMIT",
+            "DATABASE",
+            "SCREENSHOT",
+            "ARTIFACT",
+            "BENCHMARK",
+            "PROJECT",
+            "RELEASE",
+            "PACKAGE",
+            "PERMISSION"
+          ]
+        },
+        "evidence_level": { "enum": ["E0", "E1", "E2", "E3", "E4", "E5"] },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["uri", "branch", "commit_sha"],
+          "properties": {
+            "uri": { "type": "string" },
+            "branch": { "type": ["string", "null"] },
+            "commit_sha": { "type": ["string", "null"], "pattern": "^[a-f0-9]{40}$" },
+            "file_path": { "type": ["string", "null"] },
+            "symbol": { "type": ["string", "null"] },
+            "line_start": { "type": ["integer", "null"], "minimum": 1 },
+            "line_end": { "type": ["integer", "null"], "minimum": 1 },
+            "blob_sha": { "type": ["string", "null"] },
+            "run_id": { "type": ["integer", "null"] },
+            "artifact_uri": { "type": ["string", "null"] },
+            "artifact_sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "retrieved_at": { "type": "string", "format": "date-time" },
+        "freshness": { "enum": ["LIVE", "STALE", "HISTORICAL", "UNKNOWN"] },
+        "result": {
+          "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "PARTIAL", "INFORMATIONAL"]
+        },
+        "supports_completion": { "type": "boolean" },
+        "details": { "type": "string" },
+        "sanitized_excerpt": { "type": ["string", "null"] },
+        "test_execution": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "command": { "type": "string" },
+            "test_name": { "type": ["string", "null"] },
+            "test_file": { "type": ["string", "null"] },
+            "exit_code": { "type": ["integer", "null"] },
+            "passed": { "type": ["integer", "null"] },
+            "failed": { "type": ["integer", "null"] },
+            "skipped": { "type": ["integer", "null"] },
+            "started_at": { "type": ["string", "null"], "format": "date-time" },
+            "finished_at": { "type": ["string", "null"], "format": "date-time" },
+            "environment": { "type": ["string", "null"] }
+          }
+        },
+        "ci_execution": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "workflow_name": { "type": ["string", "null"] },
+            "workflow_url": { "type": ["string", "null"], "format": "uri" },
+            "run_id": { "type": ["integer", "null"] },
+            "tested_sha": { "type": ["string", "null"], "pattern": "^[a-f0-9]{40}$" },
+            "event": { "type": ["string", "null"] },
+            "job_name": { "type": ["string", "null"] },
+            "conclusion": {
+              "enum": [
+                "success",
+                "failure",
+                "cancelled",
+                "skipped",
+                "in_progress",
+                "queued",
+                "unknown",
+                null
+              ]
+            }
+          }
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_type",
+        "name",
+        "status",
+        "exists",
+        "verified_at",
+        "evidence_ids",
+        "notes"
+      ],
+      "properties": {
+        "resource_type": {
+          "enum": [
+            "MILESTONE",
+            "LABEL",
+            "ISSUE_TEMPLATE",
+            "PULL_REQUEST_TEMPLATE",
+            "CODEOWNERS",
+            "DEPENDABOT",
+            "PROJECT",
+            "PROJECT_FIELD",
+            "PROJECT_VIEW",
+            "PROJECT_ITEM",
+            "WORKFLOW",
+            "PULL_REQUEST",
+            "TAG",
+            "RELEASE",
+            "RELEASE_ASSET",
+            "PACKAGE",
+            "BRANCH_PROTECTION"
+          ]
+        },
+        "name": { "type": "string" },
+        "status": {
+          "enum": [
+            "CREATED AND VERIFIED",
+            "CREATED BUT NOT YET VERIFIED",
+            "BLOCKED / NOT CREATED"
+          ]
+        },
+        "exists": { "type": ["boolean", "null"] },
+        "resource_url": { "type": ["string", "null"], "format": "uri" },
+        "verified_at": { "type": ["string", "null"], "format": "date-time" },
+        "evidence_ids": { "$ref": "#/$defs/evidenceIds" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

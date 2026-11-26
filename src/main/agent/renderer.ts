@@ -1,22 +1,16 @@
-import fs from 'fs'
-import path from 'path'
-import { app } from 'electron'
 import { sanitizeHtml } from '../security/sanitize'
+import { writeArtifactHtml } from '../store/artifactStore'
+import { TEMPLATE_SCHEMA_VERSION } from '@shared/templateCatalog'
 import type { DeckArtifact, Slide } from '@shared/types'
 
 export function renderDeck(sessionId: string, version: number, title: string, slides: Slide[]): DeckArtifact {
-  const dir = path.join(process.env.STORAGE_DIR || path.join(app.getPath('userData'), 'data'), 'artifacts', sessionId)
-  fs.mkdirSync(dir, { recursive: true })
-  const filePath = path.join(dir, `deck-v${version}.html`)
-  const html = buildHtml(title, slides)
-  fs.writeFileSync(filePath, html, 'utf8')
-  return {
+  return writeArtifactHtml({
     sessionId,
     version,
+    html: buildHtml(title, slides),
     slideCount: slides.length,
-    filePath,
-    createdAt: new Date().toISOString()
-  }
+    templateVersion: `v${TEMPLATE_SCHEMA_VERSION}`
+  })
 }
 
 function buildHtml(title: string, slides: Slide[]): string {
