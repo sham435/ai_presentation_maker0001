@@ -7,12 +7,15 @@ const electronDir = path.join(process.cwd(), 'node_modules', 'electron')
 const pathFile = path.join(electronDir, 'path.txt')
 const installScript = path.join(electronDir, 'install.js')
 
-if (!fs.existsSync(pathFile) || !fs.existsSync(installScript)) {
+if (!fs.existsSync(installScript)) {
   console.error('Electron package is not installed; run npm ci before Electron tests')
   process.exit(1)
 }
 
 function binaryPath() {
+  if (!fs.existsSync(pathFile)) {
+    return path.join(electronDir, 'dist', '__electron_path_missing__')
+  }
   const relativePath = fs.readFileSync(pathFile, 'utf8').trim()
   return process.env.ELECTRON_OVERRIDE_DIST_PATH || path.join(electronDir, 'dist', relativePath)
 }
