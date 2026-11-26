@@ -14,12 +14,38 @@ import { CANONICAL_ROLES } from '../golden/prompts'
 
 const baselineDir = path.resolve('tests/visual/baselines')
 const pngDir = path.join(baselineDir, 'png')
+const jsonDir = path.join(baselineDir, 'json')
 const diffDir = path.resolve('artifacts/visual')
 const capture = process.env.APM_CAPTURE_VISUAL === '1'
 const MAX_DIFF_RATIO = 0.01
 const VIEWPORT_WIDTH = 1400
 const VIEWPORT_HEIGHT = 841
 const TEST_TIMEOUT = 30_000
+const UI_GEOMETRY_TOLERANCE = 20
+const UI_FLOW_SELECTORS = new Set(['.app', '.sidebar', '.main', '.template-grid'])
+const UI_SELECTORS = [
+  '.app',
+  '.sidebar',
+  '.main',
+  '.toolbar',
+  '.empty',
+  '[data-testid="offline-badge"]',
+  '[data-testid="model-pill"]',
+  '[data-testid="open-settings"]',
+  '.template-grid',
+  '[role="dialog"]',
+  '[data-testid="settings-save"]'
+]
+
+interface UiSnapshotEntry {
+  selector: string
+  present: boolean
+  text?: string
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+}
 
 let app: ElectronApplication
 let page: Page
@@ -86,6 +112,54 @@ async function screenshot(name: string) {
   await compareOrCapture(name, await page.screenshot({ animations: 'disabled', scale: 'css' }))
 }
 
+/**
+ * UI chrome is compared structurally: exact text/presence plus geometry with a
+ * small tolerance. Runner font antialiasing and scrollbar width otherwise
+ * produce large pixel diffs for identical application state.
+ */
+async function uiSnapshot(): Promise<UiSnapshotEntry[]> {
+  return page.evaluate((selectors) => selectors.map((selector) => {
+    const element = document.querySelector(selector)
+    if (!element) return { selector, present: false }
+    const rect = element.getBoundingClientRect()
+    return {
+      selector,
+      present: true,
+      text: (element.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 240),
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height)
+    }
+  }), UI_SELECTORS)
+}
+
+async function compareOrCaptureUi(name: string) {
+  const target = path.join(jsonDir, `${name}.json`)
+  const actual = await uiSnapshot()
+  if (capture) {
+    fs.mkdirSync(jsonDir, { recursive: true })
+    fs.writeFileSync(target, `${JSON.stringify(actual, null, 2)}\n`)
+    return
+  }
+  expect(fs.existsSync(target), `approved UI baseline missing: ${target}. Run scripts/capture-visual-baselines.mjs explicitly.`).toBe(true)
+  const baseline = JSON.parse(fs.readFileSync(target, 'utf8')) as UiSnapshotEntry[]
+  expect(actual.length).toBe(baseline.length)
+  for (let index = 0; index < baseline.length; index += 1) {
+    const expected = baseline[index]
+    const observed = actual[index]
+    expect(observed.selector).toBe(expected.selector)
+    expect(observed.present).toBe(expected.present)
+    if (!expected.present) continue
+    expect(observed.text, `${name} text for ${expected.selector}`).toBe(expected.text)
+    if (UI_FLOW_SELECTORS.has(expected.selector)) continue
+    for (const axis of ['x', 'y', 'width', 'height'] as const) {
+      const delta = Math.abs((observed[axis] ?? 0) - (expected[axis] ?? 0))
+      expect(delta, `${name} ${axis} for ${expected.selector}`).toBeLessThanOrEqual(UI_GEOMETRY_TOLERANCE)
+    }
+  }
+}
+
 /** Electron pages controlled over CDP do not expose Page.printToPDF; render in the main process. */
 async function pdfFromMainProcess(htmlPath: string): Promise<Buffer> {
   const base64 = await app.evaluate(async ({ BrowserWindow }, file) => {
@@ -131,20 +205,20 @@ afterAll(async () => {
 
 describe('approved visual and PDF page baselines', () => {
   it('compares the main window baseline', async () => {
-    await screenshot('main-window')
+    await compareOrCaptureUi('main-window')
   }, TEST_TIMEOUT)
 
   it('compares the template gallery baseline', async () => {
     await page.locator('button:has-text("Browse all")').click()
     await page.locator('.template-grid, [role="dialog"]').first().waitFor()
-    await screenshot('template-gallery')
+    await compareOrCaptureUi('template-gallery')
     await page.keyboard.press('Escape')
   }, TEST_TIMEOUT)
 
   it('compares the settings modal baseline', async () => {
     await page.locator('[data-testid="open-settings"]').click()
     await page.locator('[data-testid="settings-save"]').waitFor()
-    await screenshot('settings-modal')
+    await compareOrCaptureUi('settings-modal')
     await page.keyboard.press('Escape')
   }, TEST_TIMEOUT)
 

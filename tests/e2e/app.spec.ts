@@ -82,6 +82,10 @@ test('create, stream, edit, export and cancel flows work end to end', async () =
   await page.locator('button:has-text("Export")').click()
   await expect.poll(() => fs.readdirSync(saveDir).some((name) => name.endsWith('.html'))).toBe(true)
 
+  // Keep at least one request in flight so cancellation cannot race completion.
+  await app.evaluate(async () => {
+    process.env.APM_E2E_DELAY_MS = '5000'
+  })
   await page.locator('textarea').first().fill('Another presentation for cancellation')
   await page.locator('button:has-text("Generate Deck")').click()
   const cancel = page.locator('[data-testid="cancel-deck"]')
