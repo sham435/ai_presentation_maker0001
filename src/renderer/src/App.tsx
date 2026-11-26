@@ -45,9 +45,10 @@ export default function App() {
     api.listSessions().then(setSessions).catch((e) => setError(String(e)))
     api.getSettings?.().then(setSettings).catch((e) => setError(String(e)))
     const off = api.onAgentEvent((event: AgentEvent) => {
-      if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
-      // Correlated events from a superseded or finished operation must not update the UI.
-      if ('correlationId' in event && event.correlationId !== activeOperationId.current) return
+      // Correlated events belong to the active operation even before its new session is known.
+      if ('correlationId' in event) {
+        if (event.correlationId !== activeOperationId.current) return
+      } else if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
       if (event.type === 'plan') {
         setStatus(`Outline ready: ${event.outline.slides.length} slides`)
         setSlides([])
@@ -111,6 +112,8 @@ export default function App() {
           includeCitations
         }
       })
+      // A cancelled operation must not overwrite the cancellation status with its partial session.
+      if (activeOperationId.current !== operationId) return
       activeSessionId.current = session.id
       setCurrent(session)
       setSlides(session.slides || [])
@@ -120,7 +123,7 @@ export default function App() {
       setError(e?.message || String(e))
       setStatus('Error')
     } finally {
-      activeOperationId.current = null
+      if (activeOperationId.current === operationId) activeOperationId.current = null
       setBusy(false)
     }
   }
@@ -139,6 +142,7 @@ export default function App() {
         instruction: editInstruction.trim(),
         operationId
       })
+      if (activeOperationId.current !== operationId) return
       activeSessionId.current = session.id
       setCurrent(session)
       setSlides(session.slides || [])
@@ -149,7 +153,7 @@ export default function App() {
       setError(e?.message || String(e))
       setStatus('Error')
     } finally {
-      activeOperationId.current = null
+      if (activeOperationId.current === operationId) activeOperationId.current = null
       setBusy(false)
     }
   }

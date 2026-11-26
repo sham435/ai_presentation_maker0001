@@ -155,6 +155,9 @@ export class HttpModelGateway implements ModelGateway {
 export class MockModelGateway implements ModelGateway {
   async complete(req: ModelRequest): Promise<string> {
     if (req.signal?.aborted) throw cancelled()
+    // Deterministic test hook: E2E cancellation needs a controllable in-flight request.
+    const delayMs = Number(process.env.APM_E2E_DELAY_MS || 0)
+    if (delayMs > 0) await delay(delayMs, req.signal)
     logger.warn('Using MockModelGateway - configure a model endpoint for real generation')
 
     if (req.prompt.includes('Return JSON outline')) {

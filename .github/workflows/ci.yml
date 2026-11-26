@@ -35,12 +35,18 @@ jobs:
         run: npm run test:unit
       - name: Integration tests
         run: npm run test:integration
+      - name: Golden prompt quality gates
+        run: npm run test:golden
+      - name: 30-slide load and memory tests
+        run: npm run test:load
+      - name: IPC security and credential-exposure tests
+        run: npm run test:security
       - name: Electron build
         run: npm run build
       - name: Smoke build
         run: node scripts/smoke-build.mjs
       - name: Verify command surface
-        run: npm pkg get scripts.verify scripts.verify:all scripts.eval:live
+        run: npm pkg get scripts.test:unit scripts.test:integration scripts.test:golden scripts.test:e2e scripts.test:visual scripts.test:load scripts.test:security scripts.verify scripts.verify:all scripts.eval:live
 
   dependency-audit:
     name: dependency-audit

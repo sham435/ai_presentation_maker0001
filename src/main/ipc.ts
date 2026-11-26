@@ -2,7 +2,6 @@ import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { nanoid } from 'nanoid'
-import type { ZodType } from 'zod'
 import { IPC } from '@shared/ipc'
 import {
   createDeckSchema,
@@ -19,6 +18,7 @@ import {
 import type { CreatePresentationRequest, EditPresentationRequest } from '@shared/types'
 import { diagnoseGateway } from './agent/modelGateway'
 import { PresentationOrchestrator } from './agent/orchestrator'
+import { isSafeArtifactPath, validated, validationMessage } from './ipcGuards'
 import { credentialStatus, gatewayStatus, getCredentialStore } from './credentials/keychain'
 import { defaultDataDir } from './store/db'
 import { clearTelemetry, readTelemetry, setTelemetrySetting } from './telemetry/jsonl'
@@ -30,21 +30,8 @@ function artifactsRoot() {
   return path.join(process.env.STORAGE_DIR || path.join(app.getPath('userData'), 'data'), 'artifacts')
 }
 
-function isSafeArtifactPath(filePath: unknown): filePath is string {
-  if (typeof filePath !== 'string' || !filePath.trim()) return false
-  const resolved = path.resolve(filePath)
-  const root = path.resolve(artifactsRoot()) + path.sep
-  return resolved.startsWith(root) && fs.existsSync(resolved) && fs.statSync(resolved).isFile()
-}
-
-function validationMessage(error: { issues: Array<{ message: string }> }) {
-  return error.issues.map((issue) => issue.message).join('; ')
-}
-
-function validated<T>(schema: ZodType<T>, value: unknown): T {
-  const parsed = schema.safeParse(value)
-  if (!parsed.success) throw new Error(`Invalid IPC response: ${validationMessage(parsed.error)}`)
-  return parsed.data
+function safeArtifactPath(filePath: unknown): filePath is string {
+  return isSafeArtifactPath(filePath, artifactsRoot())
 }
 
 export function registerIpc(orchestrator: PresentationOrchestrator) {
@@ -159,7 +146,7 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
   })
 
   ipcMain.handle(IPC.EXPORT_DECK, async (e, filePath: string) => {
-    if (!isSafeArtifactPath(filePath)) throw new Error('Invalid artifact path')
+    if (!safeArtifactPath(filePath)) throw new Error('Invalid artifact path')
     const win = BrowserWindow.fromWebContents(e.sender)
     const options = {
       defaultPath: path.basename(filePath),
@@ -172,7 +159,7 @@ export function registerIpc(orchestrator: PresentationOrchestrator) {
   })
 
   ipcMain.handle(IPC.OPEN_ARTIFACT, async (_e, filePath: string) => {
-    if (!isSafeArtifactPath(filePath)) throw new Error('Invalid artifact path')
+    if (!safeArtifactPath(filePath)) throw new Error('Invalid artifact path')
     await shell.openPath(filePath)
     return { ok: true }
   })

@@ -33,7 +33,7 @@ Language: ${spec.language}
 Page count bucket: ${spec.pageCountBucket} (aim for ${target} slides)
 Style: ${spec.styleClass}
 Return JSON outline with shape: {"title":string,"subtitle"?:string,"slides":[{"index":number,"role":"cover|catalog|chapter|content|end","headline":string,"points":string[]}]}
-Rules: first slide cover, second slide catalog (table of contents), then chapter dividers followed by content slides, last slide end. Use only those five roles. 5-12 slides.`
+Rules: first slide cover, second slide catalog (table of contents), then chapter dividers followed by content slides, last slide end. Use only those five roles. 5-30 slides.`
 
   const raw = await model.complete({ system, prompt, temperature: 0.2, signal, onRetry, correlationId })
   const parsed = safeJson(raw)
@@ -60,7 +60,7 @@ function targetSlideCount(bucket: string): number {
 
 /** Reuse one role sequence for model output and offline fallback so previews match generated decks. */
 function normalizeOutline(outline: Outline): Outline {
-  const slides = outline.slides.slice(0, 12).map((slide, i, all) => {
+  const slides = outline.slides.slice(0, 30).map((slide, i, all) => {
     let role: CanonicalSlideRole
     if (i === 0) role = 'cover'
     else if (i === 1 && all.length > 2) role = 'catalog'

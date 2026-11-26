@@ -29,20 +29,15 @@ jobs:
         run: npm run build
       - name: Verify UI, template gallery, settings modal and five slide roles
         run: npm run test:visual
-      - name: Verify PDF page screenshots when available
-        run: |
-          if [ -f scripts/capture-pdf-baselines.mjs ]; then
-            node scripts/capture-pdf-baselines.mjs --verify
-          else
-            echo "PDF baseline capture script not present yet"
-          fi
+      - name: Verify approved PDF page screenshot baselines
+        run: node -e "const fs=require('fs'); const roles=['cover','catalog','chapter','content','end']; for (const r of roles) { const p='tests/visual/baselines/png/pdf-page-'+r+'.png'; if (!fs.existsSync(p)) throw new Error('Missing approved PDF page baseline: '+p) } console.log('approved PDF page baselines:', roles.length)"
       - name: Upload visual diffs
         if: failure()
         uses: actions/upload-artifact@v7.0.2
         with:
           name: visual-diffs
           path: |
-            tests/visual/**/*.diff.png
+            artifacts/visual/*.png
             test-results/**
           if-no-files-found: ignore
 

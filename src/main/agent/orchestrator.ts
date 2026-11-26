@@ -185,10 +185,12 @@ export class PresentationOrchestrator {
       }
 
       this.assertCurrent(sessionId, correlationId)
+      if (signal?.aborted) throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
       const artifact = await this.timed('render', sessionId, correlationId, emit, async () =>
         this.render(sessionId, (session.artifact?.version || 0) + 1, outline.title, slides)
       )
       this.assertCurrent(sessionId, correlationId)
+      if (signal?.aborted) throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
       const done = await this.timed('persist', sessionId, correlationId, emit, async () =>
         this.save({ ...session, artifact, status: 'completed' }, correlationId, emit)
       )
@@ -229,10 +231,12 @@ export class PresentationOrchestrator {
       for (const slide of generating.slides) emit({ type: 'slide', sessionId, correlationId, slide })
 
       this.assertCurrent(sessionId, correlationId)
+      if (signal?.aborted) throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
       const artifact = await this.timed('render', sessionId, correlationId, emit, async () =>
         this.render(sessionId, (existing.artifact?.version || 0) + 1, generating.outline.title, generating.slides)
       )
       this.assertCurrent(sessionId, correlationId)
+      if (signal?.aborted) throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
       const done = await this.timed('persist', sessionId, correlationId, emit, async () =>
         this.save({ ...generating, artifact, status: 'completed' }, correlationId, emit)
       )

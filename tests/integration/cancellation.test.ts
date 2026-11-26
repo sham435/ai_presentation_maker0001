@@ -154,3 +154,150 @@ describe('cancellation, concurrency and stale-result protection', () => {
     expect(store.get('session-1')?.status).toBe('completed')
   })
 })
+
+function deferred<T = void>(): { promise: Promise<T>; resolve: (value: T) => void } {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>((done) => { resolve = done })
+  return { promise, resolve }
+}
+
+/** Deterministic barrier: no sleeps, the test releases the provider explicitly. */
+class GatedModel implements ModelGateway {
+  readonly observedAbort: boolean[] = []
+  abortedAfterGate = false
+
+  constructor(private readonly gate: Promise<void>, private readonly gateAt: 'outline' | 'slide') {}
+
+  async complete(req: { prompt: string; signal?: AbortSignal; onRetry?: (info: RetryInfo) => void }): Promise<string> {
+    this.observedAbort.push(Boolean(req.signal?.aborted))
+    const isOutline = req.prompt.includes('Return JSON outline')
+    if ((isOutline && this.gateAt === 'outline') || (!isOutline && this.gateAt === 'slide')) {
+      await this.gate
+    }
+    if (req.signal?.aborted) {
+      this.abortedAfterGate = true
+      throw new ModelGatewayError('Generation cancelled', 'cancelled', false)
+    }
+    if (isOutline) {
+      return JSON.stringify({
+        title: 'Original deck',
+        slides: [
+          { index: 1, role: 'cover', headline: 'Cover', points: ['Intro'] },
+          { index: 2, role: 'catalog', headline: 'Agenda', points: ['One', 'Two'] },
+          { index: 3, role: 'content', headline: 'Content', points: ['Point'] },
+          { index: 4, role: 'end', headline: 'End', points: ['Thanks'] }
+        ]
+      })
+    }
+    return JSON.stringify({ headline: `${this.gateAt} slide`, bullets: ['Point'] })
+  }
+}
+
+describe('deterministic cancellation barriers', () => {
+  it('aborts an in-flight provider request and emits no completion', async () => {
+    const store = makeStore()
+    const gate = deferred()
+    const model = new GatedModel(gate.promise, 'outline')
+    const orchestrator = new PresentationOrchestrator({ store, model, render })
+    const controller = new AbortController()
+    const events: AgentEvent[] = []
+
+    const pending = orchestrator.create({ brief: 'Original brief', operationId: 'op-abort-request' }, (e) => events.push(e), controller.signal)
+    controller.abort()
+    gate.resolve()
+    await pending
+
+    expect(model.abortedAfterGate).toBe(true)
+    expect(events.some((e) => e.type === 'completed')).toBe(false)
+    expect(events.some((e) => e.type === 'cancelled' && e.correlationId === 'op-abort-request')).toBe(true)
+    expect(store.get('session-1')).toBeUndefined()
+  })
+
+  it('aborts during slide generation without emitting a completion or new artifact', async () => {
+    const store = makeStore()
+    store.save(existingSession())
+    const gate = deferred()
+    const model = new GatedModel(gate.promise, 'slide')
+    const orchestrator = new PresentationOrchestrator({ store, model, render })
+    const controller = new AbortController()
+    const events: AgentEvent[] = []
+
+    const pending = orchestrator.edit({ sessionId: 'session-1', instruction: 'Change slide 3', operationId: 'op-abort-slide' }, (e) => events.push(e), controller.signal)
+    controller.abort()
+    gate.resolve()
+    await pending
+
+    expect(model.abortedAfterGate).toBe(true)
+    expect(events.some((e) => e.type === 'completed')).toBe(false)
+    expect(events.some((e) => e.type === 'cancelled' && e.correlationId === 'op-abort-slide')).toBe(true)
+    expect(store.get('session-1')?.artifact).toBeUndefined()
+    expect(store.get('session-1')?.status).toBe('completed')
+  })
+
+  it('suppresses a stale completion after a newer operation owns the session', async () => {
+    const store = makeStore()
+    store.save(existingSession())
+    const gate = deferred()
+    const slow = new PresentationOrchestrator({ store, model: new GatedModel(gate.promise, 'slide'), render })
+    const fast = new PresentationOrchestrator({ store, model: new TaggedModel('newer', 0), render })
+    const slowEvents: AgentEvent[] = []
+    const fastEvents: AgentEvent[] = []
+
+    const pendingSlow = slow.edit({ sessionId: 'session-1', instruction: 'Change slide 3', operationId: 'op-stale' }, (e) => slowEvents.push(e))
+    const pendingFast = fast.edit({ sessionId: 'session-1', instruction: 'Change slide 3', operationId: 'op-newer' }, (e) => fastEvents.push(e))
+    const newer = await pendingFast
+    gate.resolve()
+    await pendingSlow
+
+    expect(fastEvents.some((e) => e.type === 'completed' && e.correlationId === 'op-newer')).toBe(true)
+    expect(slowEvents.some((e) => e.type === 'completed' && e.correlationId === 'op-stale')).toBe(false)
+    expect(slowEvents.some((e) => e.type === 'cancelled' && e.correlationId === 'op-stale')).toBe(true)
+    expect(newer.operationId).toBe('op-newer')
+    const stored = store.get('session-1')!
+    expect(stored.operationId).toBe('op-newer')
+    expect(stored.slides.find((s) => s.index === 3)?.content.headline).toBe('newer slide')
+  })
+
+  it('keeps the newer result when concurrent edits race on the same session', async () => {
+    const store = makeStore()
+    store.save(existingSession())
+    const gate = deferred()
+    const older = new PresentationOrchestrator({ store, model: new GatedModel(gate.promise, 'slide'), render })
+    const newer = new PresentationOrchestrator({ store, model: new TaggedModel('latest', 0), render })
+
+    const pendingOld = older.edit({ sessionId: 'session-1', instruction: 'older edit', operationId: 'op-older' }, () => {})
+    const pendingNew = newer.edit({ sessionId: 'session-1', instruction: 'newer edit', operationId: 'op-latest' }, () => {})
+    await pendingNew
+    gate.resolve()
+    await pendingOld
+
+    const stored = store.get('session-1')!
+    expect(stored.operationId).toBe('op-latest')
+    expect(stored.slides.find((s) => s.index === 3)?.content.headline).toBe('latest slide')
+  })
+
+  it('blocks persistence and completion when cancellation happens before the final save', async () => {
+    const store = makeStore()
+    const controller = new AbortController()
+    const events: AgentEvent[] = []
+    const orchestrator = new PresentationOrchestrator({
+      store,
+      model: new TaggedModel('fast', 0),
+      render: (sessionId, version, _title, slides) => {
+        controller.abort()
+        return render(sessionId, version, _title, slides)
+      }
+    })
+
+    const result = await orchestrator.create(
+      { brief: 'Original brief', operationId: 'op-abort-persist' },
+      (e) => events.push(e),
+      controller.signal
+    )
+
+    expect(events.some((e) => e.type === 'completed')).toBe(false)
+    expect(events.some((e) => e.type === 'cancelled' && e.correlationId === 'op-abort-persist')).toBe(true)
+    expect(store.get(result.id)?.status).toBe('generating')
+    expect(store.get(result.id)?.artifact).toBeUndefined()
+  })
+})
