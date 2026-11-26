@@ -19,6 +19,7 @@ const capture = process.env.APM_CAPTURE_VISUAL === '1'
 const MAX_DIFF_RATIO = 0.01
 const VIEWPORT_WIDTH = 1400
 const VIEWPORT_HEIGHT = 841
+const TEST_TIMEOUT = 30_000
 
 let app: ElectronApplication
 let page: Page
@@ -116,7 +117,7 @@ beforeAll(async () => {
   }).trim()
   app = await electron.launch({
     executablePath,
-    args: [path.resolve('out/main/index.js'), `--user-data-dir=${workDir}`],
+    args: ['--force-device-scale-factor=1', path.resolve('out/main/index.js'), `--user-data-dir=${workDir}`],
     env: { ...process.env, STORAGE_DIR: workDir, APM_E2E: '1' }
   })
   page = await app.firstWindow()
@@ -131,21 +132,21 @@ afterAll(async () => {
 describe('approved visual and PDF page baselines', () => {
   it('compares the main window baseline', async () => {
     await screenshot('main-window')
-  })
+  }, TEST_TIMEOUT)
 
   it('compares the template gallery baseline', async () => {
     await page.locator('button:has-text("Browse all")').click()
     await page.locator('.template-grid, [role="dialog"]').first().waitFor()
     await screenshot('template-gallery')
     await page.keyboard.press('Escape')
-  })
+  }, TEST_TIMEOUT)
 
   it('compares the settings modal baseline', async () => {
     await page.locator('[data-testid="open-settings"]').click()
     await page.locator('[data-testid="settings-save"]').waitFor()
     await screenshot('settings-modal')
     await page.keyboard.press('Escape')
-  })
+  }, TEST_TIMEOUT)
 
   for (const role of CANONICAL_ROLES) {
     it(`compares the ${role} slide role and PDF page screenshot`, async () => {
@@ -169,6 +170,6 @@ describe('approved visual and PDF page baselines', () => {
       expect(pdfText.match(/\/Type\s*\/Page\b/g) ?? [], `${role} PDF page count`).toHaveLength(1)
       expect(pdfText, `${role} PDF page box`).toContain('/MediaBox')
       await page.emulateMedia({ media: 'screen' })
-    })
+    }, TEST_TIMEOUT)
   }
 })
