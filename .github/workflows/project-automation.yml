@@ -23,7 +23,7 @@ jobs:
       BLOCKED_OPTION_ID: ${{ vars.PROJECT_STATUS_BLOCKED_OPTION_ID }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Configure Projects token when available
         if: env.PROJECT_ID != ''
         run: echo "PROJECT_ID configured; project automation enabled"

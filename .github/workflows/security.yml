@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Setup Node.js 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24
           cache: npm
@@ -29,11 +29,11 @@ jobs:
       - name: Dependency audit
         run: npm audit --audit-level=high
       - name: CodeQL init
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4.39.5
         with:
           languages: javascript-typescript
       - name: CodeQL analyze
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4.39.5
       - name: IPC and credential exposure tests
         run: npm run test:unit -- tests/credentials.test.ts tests/schema.test.ts tests/modelGateway.test.ts
       - name: Secret scanning status
