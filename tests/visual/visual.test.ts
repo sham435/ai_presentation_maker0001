@@ -17,6 +17,8 @@ const pngDir = path.join(baselineDir, 'png')
 const diffDir = path.resolve('artifacts/visual')
 const capture = process.env.APM_CAPTURE_VISUAL === '1'
 const MAX_DIFF_RATIO = 0.01
+const VIEWPORT_WIDTH = 1400
+const VIEWPORT_HEIGHT = 841
 
 let app: ElectronApplication
 let page: Page
@@ -79,7 +81,8 @@ async function compareOrCapture(name: string, buffer: Buffer) {
 }
 
 async function screenshot(name: string) {
-  await compareOrCapture(name, await page.screenshot({ animations: 'disabled' }))
+  await page.setViewportSize({ width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT })
+  await compareOrCapture(name, await page.screenshot({ animations: 'disabled', scale: 'css' }))
 }
 
 /** Electron pages controlled over CDP do not expose Page.printToPDF; render in the main process. */
