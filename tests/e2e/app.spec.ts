@@ -26,6 +26,8 @@ async function launchApp() {
       ...process.env,
       STORAGE_DIR: storageDir,
       APM_E2E: '1',
+      APM_E2E_BARRIER: '1',
+      APM_E2E_BARRIER_DIR: path.join(storageDir, 'barrier'),
       APM_E2E_DELAY_MS: '120',
       ELECTRON_DISABLE_SECURITY_WARNINGS: '1'
     }
@@ -81,15 +83,46 @@ test('create, stream, edit, export and cancel flows work end to end', async () =
 
   await page.locator('button:has-text("Export")').click()
   await expect.poll(() => fs.readdirSync(saveDir).some((name) => name.endsWith('.html'))).toBe(true)
+})
 
-  // Keep at least one request in flight so cancellation cannot race completion.
-  await app.evaluate(async () => {
-    process.env.APM_E2E_DELAY_MS = '5000'
-  })
-  await page.locator('textarea').first().fill('Another presentation for cancellation')
-  await page.locator('button:has-text("Generate Deck")').click()
-  const cancel = page.locator('[data-testid="cancel-deck"]')
-  await expect(cancel).toBeEnabled()
-  await cancel.click()
-  await expect(page.getByText('Generation cancelled')).toBeVisible({ timeout: 60_000 })
+const barrierDir = () => path.join(storageDir, 'barrier')
+const barrierFile = (name: 'arm' | 'ready' | 'release') => path.join(barrierDir(), name)
+
+function armBarrier() {
+  fs.rmSync(barrierDir(), { recursive: true, force: true })
+  fs.mkdirSync(barrierDir(), { recursive: true })
+  fs.writeFileSync(barrierFile('arm'), '1')
+}
+
+function releaseBarrier() {
+  fs.mkdirSync(barrierDir(), { recursive: true })
+  fs.writeFileSync(barrierFile('release'), '1')
+}
+
+test('cancellation interrupts a generation held at a deterministic barrier', async () => {
+  armBarrier()
+
+  try {
+    await page.locator('textarea').first().fill('Another presentation for cancellation')
+    await page.locator('button:has-text("Generate Deck")').click()
+
+    // Readiness signal: the main process published `ready` before any result.
+    await expect.poll(() => fs.existsSync(barrierFile('ready')), { timeout: 20_000 }).toBe(true)
+
+    const cancel = page.locator('[data-testid="cancel-deck"]')
+    await expect(cancel).toBeEnabled()
+    const slidesBefore = await page.locator('.slide-card').count()
+    await cancel.click()
+
+    await expect(page.getByText('Generation cancelled')).toBeVisible({ timeout: 60_000 })
+    await expect(cancel).toBeDisabled()
+
+    // Releasing after cancellation must not produce a stale completion.
+    releaseBarrier()
+    await expect(page.getByText('Deck completed')).toHaveCount(0)
+    expect(await page.locator('.slide-card').count()).toBe(slidesBefore)
+  } finally {
+    // Release unconditionally so a failed assertion cannot leave generation held.
+    releaseBarrier()
+  }
 })

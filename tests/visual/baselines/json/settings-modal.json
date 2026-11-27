@@ -1,101 +1,511 @@
-[
-  {
-    "selector": ".app",
-    "present": true,
-    "text": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducationResearchMarketingTechnologyPortfolioL",
-    "x": 0,
-    "y": 0,
-    "width": 1400,
-    "height": 1361
-  },
-  {
-    "selector": ".sidebar",
-    "present": true,
-    "text": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducationResearchMarketingTechnologyPortfolioL",
-    "x": 0,
-    "y": 0,
-    "width": 360,
-    "height": 1361
-  },
-  {
-    "selector": ".main",
-    "present": true,
-    "text": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettingsEnter a brief and generate a deck. Slides will stream in here.",
-    "x": 360,
-    "y": 0,
-    "width": 1040,
-    "height": 1361
-  },
-  {
-    "selector": ".toolbar",
-    "present": true,
-    "text": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettings",
-    "x": 384,
-    "y": 20,
-    "width": 992,
-    "height": 51
-  },
-  {
-    "selector": ".empty",
-    "present": true,
-    "text": "Enter a brief and generate a deck. Slides will stream in here.",
-    "x": 384,
-    "y": 87,
-    "width": 992,
-    "height": 100
-  },
-  {
-    "selector": "[data-testid=\"offline-badge\"]",
-    "present": true,
-    "text": "Offline Preview",
-    "x": 1019,
-    "y": 32,
-    "width": 108,
-    "height": 27
-  },
-  {
-    "selector": "[data-testid=\"model-pill\"]",
-    "present": true,
-    "text": "gpt-4.1-mini",
-    "x": 1135,
-    "y": 32,
-    "width": 92,
-    "height": 27
-  },
-  {
-    "selector": "[data-testid=\"open-settings\"]",
-    "present": true,
-    "text": "Settings",
-    "x": 1305,
-    "y": 31,
-    "width": 71,
-    "height": 29
-  },
-  {
-    "selector": ".template-grid",
-    "present": true,
-    "text": "AaNavy ExecutiveAaClassroom LightAaResearch TealAaSunset PitchAaCyber CyanAaPortfolio GoldAaRose LifestyleAaCorporate SlateAaHealthcare MintAaMinimal MonoAaStartup VioletAaCreative CoralAaAcademic ForestAaMidnight PitchAaWellness Sky",
-    "x": 35,
-    "y": 624,
-    "width": 289,
-    "height": 420
-  },
-  {
-    "selector": "[role=\"dialog\"]",
-    "present": true,
-    "text": "Model SettingsConfigure an OpenAI-compatible endpoint. Keys stay in the OS keychain.×EndpointModelAPI keyEnable local diagnostic telemetry (opt-in; never leaves this device)Offline PreviewNo API keyKeychain availableSave settingsStore keyTe",
-    "x": 390,
-    "y": 160,
-    "width": 620,
-    "height": 520
-  },
-  {
-    "selector": "[data-testid=\"settings-save\"]",
-    "present": true,
-    "text": "Save settings",
-    "x": 415,
-    "y": 572,
-    "width": 130,
-    "height": 38
+{
+  "entries": [
+    {
+      "selector": ".app",
+      "present": true,
+      "order": 0,
+      "tag": "div",
+      "role": "generic",
+      "name": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducat",
+      "text": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducationResearchMarketingTechnologyPortfolioL",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app"
+      ],
+      "layout": {
+        "xRatio": 0,
+        "yRatio": 0,
+        "widthRatio": 1,
+        "heightRatio": 1
+      }
+    },
+    {
+      "selector": ".sidebar",
+      "present": true,
+      "order": 1,
+      "tag": "aside",
+      "role": "generic",
+      "name": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducat",
+      "text": "AI Presentation MakerDesktop agent stack · brief → outline → slides → deckBriefA 10-slide presentation about renewable energy for investorsAudienceLanguageLengthShortMedium10-15LongStyleBusinessEducationResearchMarketingTechnologyPortfolioL",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app",
+        "aside.sidebar"
+      ],
+      "layout": {
+        "xRatio": 0,
+        "yRatio": 0,
+        "widthRatio": 0.26,
+        "heightRatio": 1
+      }
+    },
+    {
+      "selector": ".main",
+      "present": true,
+      "order": 2,
+      "tag": "main",
+      "role": "generic",
+      "name": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettingsEnter a brief and generate a deck. Slides will stream in here.",
+      "text": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettingsEnter a brief and generate a deck. Slides will stream in here.",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app",
+        "main.main"
+      ],
+      "layout": {
+        "xRatio": 0.26,
+        "yRatio": 0,
+        "widthRatio": 0.74,
+        "heightRatio": 1
+      }
+    },
+    {
+      "selector": ".toolbar",
+      "present": true,
+      "order": 3,
+      "tag": "div",
+      "role": "generic",
+      "name": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettings",
+      "text": "WorkspaceStatus: ReadyOffline Previewgpt-4.1-miniCancelSettings",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app",
+        "main.main",
+        "div.toolbar"
+      ],
+      "layout": {
+        "xRatio": 0.27,
+        "yRatio": 0.01,
+        "widthRatio": 0.71,
+        "heightRatio": 0.04
+      }
+    },
+    {
+      "selector": ".empty",
+      "present": true,
+      "order": 4,
+      "tag": "div",
+      "role": "generic",
+      "name": "Enter a brief and generate a deck. Slides will stream in here.",
+      "text": "Enter a brief and generate a deck. Slides will stream in here.",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app",
+        "main.main",
+        "div.empty"
+      ],
+      "layout": {
+        "xRatio": 0.27,
+        "yRatio": 0.06,
+        "widthRatio": 0.71,
+        "heightRatio": 0.07
+      }
+    },
+    {
+      "selector": "[data-testid=\"offline-badge\"]",
+      "present": true,
+      "order": 5,
+      "tag": "span",
+      "role": "generic",
+      "name": "Offline Preview",
+      "text": "Offline Preview",
+      "testId": "offline-badge",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "main.main",
+        "div.toolbar",
+        "div.toolbar-actions",
+        "span.pill"
+      ],
+      "layout": {
+        "xRatio": 0.73,
+        "yRatio": 0.02,
+        "widthRatio": 0.08,
+        "heightRatio": 0.02
+      }
+    },
+    {
+      "selector": "[data-testid=\"model-pill\"]",
+      "present": true,
+      "order": 6,
+      "tag": "span",
+      "role": "generic",
+      "name": "gpt-4.1-mini",
+      "text": "gpt-4.1-mini",
+      "testId": "model-pill",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "main.main",
+        "div.toolbar",
+        "div.toolbar-actions",
+        "span.pill"
+      ],
+      "layout": {
+        "xRatio": 0.81,
+        "yRatio": 0.02,
+        "widthRatio": 0.07,
+        "heightRatio": 0.02
+      }
+    },
+    {
+      "selector": "[data-testid=\"cancel-deck\"]",
+      "present": true,
+      "order": 7,
+      "tag": "button",
+      "role": "button",
+      "name": "Cancel",
+      "text": "Cancel",
+      "testId": "cancel-deck",
+      "visible": true,
+      "enabled": false,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "main.main",
+        "div.toolbar",
+        "div.toolbar-actions",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.88,
+        "yRatio": 0.02,
+        "widthRatio": 0.04,
+        "heightRatio": 0.02
+      }
+    },
+    {
+      "selector": "[data-testid=\"open-settings\"]",
+      "present": true,
+      "order": 8,
+      "tag": "button",
+      "role": "button",
+      "name": "Settings",
+      "text": "Settings",
+      "testId": "open-settings",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "main.main",
+        "div.toolbar",
+        "div.toolbar-actions",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.93,
+        "yRatio": 0.02,
+        "widthRatio": 0.05,
+        "heightRatio": 0.02
+      }
+    },
+    {
+      "selector": "button[text=\"Generate Deck\"]",
+      "present": true,
+      "order": 9,
+      "tag": "button",
+      "role": "button",
+      "name": "Generate Deck",
+      "text": "Generate Deck",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "aside.sidebar",
+        "div.card",
+        "div.actions",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.03,
+        "yRatio": 0.32,
+        "widthRatio": 0.1,
+        "heightRatio": 0.03
+      }
+    },
+    {
+      "selector": "button[text=\"Browse all\"]",
+      "present": true,
+      "order": 10,
+      "tag": "button",
+      "role": "button",
+      "name": "Browse all",
+      "text": "Browse all",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div",
+        "div.app",
+        "aside.sidebar",
+        "div.card",
+        "div",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.17,
+        "yRatio": 0.41,
+        "widthRatio": 0.06,
+        "heightRatio": 0.02
+      }
+    },
+    {
+      "selector": "button[text=\"Apply Edit\"]",
+      "present": true,
+      "order": 11,
+      "tag": "button",
+      "role": "button",
+      "name": "Apply Edit",
+      "text": "Apply Edit",
+      "visible": true,
+      "enabled": false,
+      "selected": false,
+      "hierarchy": [
+        "body",
+        "div",
+        "div.app",
+        "aside.sidebar",
+        "div.card",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.03,
+        "yRatio": 0.88,
+        "widthRatio": 0.08,
+        "heightRatio": 0.03
+      }
+    },
+    {
+      "selector": ".template-grid",
+      "present": true,
+      "order": 12,
+      "tag": "div",
+      "role": "generic",
+      "name": "AaNavy ExecutiveAaClassroom LightAaResearch TealAaSunset PitchAaCyber CyanAaPortfolio GoldAaRose LifestyleAaCorporate SlateAaHealthcare MintAaMinimal MonoAaStartup VioletAaCreative CoralAaAcademic For",
+      "text": "AaNavy ExecutiveAaClassroom LightAaResearch TealAaSunset PitchAaCyber CyanAaPortfolio GoldAaRose LifestyleAaCorporate SlateAaHealthcare MintAaMinimal MonoAaStartup VioletAaCreative CoralAaAcademic ForestAaMidnight PitchAaWellness Sky",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "body",
+        "div",
+        "div.app",
+        "aside.sidebar",
+        "div.card",
+        "div.template-grid"
+      ],
+      "layout": {
+        "xRatio": 0.03,
+        "yRatio": 0.46,
+        "widthRatio": 0.21,
+        "heightRatio": 0.31
+      }
+    },
+    {
+      "selector": "[role=\"dialog\"]",
+      "present": true,
+      "order": 13,
+      "tag": "div",
+      "role": "dialog",
+      "name": "Model Settings",
+      "text": "Model SettingsConfigure an OpenAI-compatible endpoint. Keys stay in the OS keychain.×EndpointModelAPI keyEnable local diagnostic telemetry (opt-in; never leaves this device)Offline PreviewNo API keyKeychain availableSave settingsStore keyTe",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "html",
+        "body",
+        "div",
+        "div.app",
+        "div.modal-backdrop",
+        "div.modal"
+      ],
+      "layout": {
+        "xRatio": 0.28,
+        "yRatio": 0.12,
+        "widthRatio": 0.44,
+        "heightRatio": 0.38
+      }
+    },
+    {
+      "selector": "[data-testid=\"settings-endpoint\"]",
+      "present": true,
+      "order": 14,
+      "tag": "input",
+      "role": "textbox",
+      "name": "Endpoint",
+      "text": "",
+      "testId": "settings-endpoint",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div.modal-backdrop",
+        "div.modal",
+        "div.modal-body",
+        "div.settings-grid",
+        "label",
+        "input.input"
+      ],
+      "layout": {
+        "xRatio": 0.3,
+        "yRatio": 0.21,
+        "widthRatio": 0.41,
+        "heightRatio": 0.03
+      }
+    },
+    {
+      "selector": "[data-testid=\"settings-model\"]",
+      "present": true,
+      "order": 15,
+      "tag": "input",
+      "role": "textbox",
+      "name": "Model",
+      "text": "",
+      "testId": "settings-model",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div.modal-backdrop",
+        "div.modal",
+        "div.modal-body",
+        "div.settings-grid",
+        "label",
+        "input.input"
+      ],
+      "layout": {
+        "xRatio": 0.3,
+        "yRatio": 0.27,
+        "widthRatio": 0.41,
+        "heightRatio": 0.03
+      }
+    },
+    {
+      "selector": "[data-testid=\"settings-api-key\"]",
+      "present": true,
+      "order": 16,
+      "tag": "input",
+      "role": "textbox",
+      "name": "API key",
+      "text": "",
+      "testId": "settings-api-key",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div.modal-backdrop",
+        "div.modal",
+        "div.modal-body",
+        "div.settings-grid",
+        "label",
+        "input.input"
+      ],
+      "layout": {
+        "xRatio": 0.3,
+        "yRatio": 0.32,
+        "widthRatio": 0.41,
+        "heightRatio": 0.03
+      }
+    },
+    {
+      "selector": "[data-testid=\"settings-telemetry\"]",
+      "present": true,
+      "order": 17,
+      "tag": "input",
+      "role": "checkbox",
+      "name": "Enable local diagnostic telemetry (opt-in; never leaves this device)",
+      "text": "",
+      "testId": "settings-telemetry",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div.modal-backdrop",
+        "div.modal",
+        "div.modal-body",
+        "div.settings-grid",
+        "label.settings-checkbox",
+        "input"
+      ],
+      "layout": {
+        "xRatio": 0.3,
+        "yRatio": 0.36,
+        "widthRatio": 0.01,
+        "heightRatio": 0.01
+      }
+    },
+    {
+      "selector": "[data-testid=\"settings-save\"]",
+      "present": true,
+      "order": 18,
+      "tag": "button",
+      "role": "button",
+      "name": "Save settings",
+      "text": "Save settings",
+      "testId": "settings-save",
+      "visible": true,
+      "enabled": true,
+      "selected": false,
+      "hierarchy": [
+        "div.app",
+        "div.modal-backdrop",
+        "div.modal",
+        "div.modal-body",
+        "div.settings-actions",
+        "button.btn"
+      ],
+      "layout": {
+        "xRatio": 0.3,
+        "yRatio": 0.42,
+        "widthRatio": 0.09,
+        "heightRatio": 0.03
+      }
+    }
+  ],
+  "relationships": {
+    "sidebarLeftOfMain": true,
+    "toolbarAboveContent": true,
+    "dialogIsModal": true,
+    "templateGridInsideDialog": false,
+    "settingsControlsInsideDialog": true,
+    "cancelDisabledWhenIdle": true
   }
-]
+}

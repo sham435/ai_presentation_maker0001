@@ -35,6 +35,7 @@ export default function App() {
   const [settings, setSettings] = useState<SettingsState | null>(null)
   const activeSessionId = useRef<string | null>(null)
   const activeOperationId = useRef<string | null>(null)
+  const cancelledOperationIds = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     const api = getApi()
@@ -47,7 +48,8 @@ export default function App() {
     const off = api.onAgentEvent((event: AgentEvent) => {
       // Correlated events belong to the active operation even before its new session is known.
       if ('correlationId' in event) {
-        if (event.correlationId !== activeOperationId.current) return
+        // A cancelled operation may resolve its IPC call before the event arrives.
+        if (event.correlationId !== activeOperationId.current && !cancelledOperationIds.current.has(event.correlationId)) return
       } else if (activeSessionId.current && event.sessionId !== activeSessionId.current) return
       if (event.type === 'plan') {
         setStatus(`Outline ready: ${event.outline.slides.length} slides`)
@@ -77,10 +79,11 @@ export default function App() {
       if (event.type === 'retry' && event.correlationId === activeOperationId.current) {
         setStatus(`Retrying (${event.attempt}/${event.maxRetries}): ${event.category}`)
       }
-      if (event.type === 'cancelled' && event.correlationId === activeOperationId.current) {
+      if (event.type === 'cancelled' && (event.correlationId === activeOperationId.current || cancelledOperationIds.current.has(event.correlationId))) {
         setStatus('Generation cancelled')
         setBusy(false)
         activeOperationId.current = null
+        cancelledOperationIds.current.delete(event.correlationId)
       }
       if (event.type === 'warning') {
         setStatus(`Warning: ${event.message}`)
@@ -160,11 +163,17 @@ export default function App() {
 
   async function cancelDeck() {
     const api = getApi()
-    if (!api || !activeOperationId.current) return
+    const operationId = activeOperationId.current
+    if (!api || !operationId) return
+    // Mark first so a late cancellation event survives the IPC-result race.
+    cancelledOperationIds.current.add(operationId)
     try {
-      await api.cancelDeck?.(activeOperationId.current)
-      setStatus('Cancelling...')
+      await api.cancelDeck?.(operationId)
+      activeOperationId.current = null
+      setStatus('Generation cancelled')
+      setBusy(false)
     } catch (e: any) {
+      cancelledOperationIds.current.delete(operationId)
       setError(e?.message || String(e))
     }
   }

@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import type { GatewayDiagnosis } from '@shared/types'
 import { logger } from '../telemetry/logger'
 import { getGatewayConfig, sanitizeEndpoint, type GatewayConfig } from '../credentials/keychain'
@@ -85,6 +87,62 @@ function delay(ms: number, signal?: AbortSignal): Promise<void> {
   })
 }
 
+function barrierDir(): string | undefined {
+  return process.env.APM_E2E_BARRIER === '1' ? process.env.APM_E2E_BARRIER_DIR : undefined
+}
+
+function waitForFile(file: string, timeoutMs: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(file)) {
+      resolve()
+      return
+    }
+    const directory = path.dirname(file)
+    const name = path.basename(file)
+    const watcher = fs.watch(directory, (_event, changed) => {
+      if (changed === name && fs.existsSync(file)) {
+        clearTimeout(timer)
+        watcher.close()
+        resolve()
+      }
+    })
+    const timer = setTimeout(() => {
+      watcher.close()
+      reject(new Error(`timed out waiting for ${name}`))
+    }, timeoutMs)
+  })
+}
+
+/**
+ * E2E-only barrier. The main process publishes a `ready` file when a request is
+ * actually in flight and waits for the test to publish `release`. Cancellation
+ * aborts the wait immediately; normal app runs never enter this path.
+ */
+async function waitAtGenerationBarrier(signal?: AbortSignal): Promise<void> {
+  const directory = barrierDir()
+  if (!directory) return
+  // Only the test that explicitly arms the barrier may hold a request.
+  if (!fs.existsSync(path.join(directory, 'arm'))) return
+  fs.mkdirSync(directory, { recursive: true })
+  const ready = path.join(directory, 'ready')
+  const release = path.join(directory, 'release')
+  fs.writeFileSync(ready, '1')
+  let onAbort: (() => void) | undefined
+  const aborted = new Promise<never>((_resolve, reject) => {
+    if (signal?.aborted) {
+      reject(cancelled())
+      return
+    }
+    onAbort = () => reject(cancelled())
+    signal?.addEventListener('abort', onAbort, { once: true })
+  })
+  try {
+    await Promise.race([waitForFile(release, 60_000), aborted])
+  } finally {
+    if (onAbort) signal?.removeEventListener('abort', onAbort)
+  }
+}
+
 export class HttpModelGateway implements ModelGateway {
   constructor(private configProvider: () => GatewayConfig = getGatewayConfig) {}
 
@@ -155,7 +213,9 @@ export class HttpModelGateway implements ModelGateway {
 export class MockModelGateway implements ModelGateway {
   async complete(req: ModelRequest): Promise<string> {
     if (req.signal?.aborted) throw cancelled()
-    // Deterministic test hook: E2E cancellation needs a controllable in-flight request.
+    // E2E-only deterministic barrier: cancellation must interrupt a held request.
+    await waitAtGenerationBarrier(req.signal)
+    if (req.signal?.aborted) throw cancelled()
     const delayMs = Number(process.env.APM_E2E_DELAY_MS || 0)
     if (delayMs > 0) await delay(delayMs, req.signal)
     logger.warn('Using MockModelGateway - configure a model endpoint for real generation')
